@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fractured Cynicism — Official Archive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --black:    #07050a;
+  --deep:     #100c14;
+  --surface:  #1a1420;
+  --panel:    #221929;
+  --border:   #3a2e44;
+  --gold:     #c9a43e;
+  --gold-dim: #7a6020;
+  --crimson:  #9b1c1c;
+  --ash:      #e8ddd0;
+  --muted:    #9a8a7a;
+  --faint:    #4a3e50;
+  --ff-head:  'Cinzel Decorative', serif;
+  --ff-sub:   'Cinzel', serif;
+  --ff-body:  'Crimson Pro', Georgia, serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--black);
+  color: var(--ash);
+  font-family: var(--ff-body);
+  font-size: 17px;
+  line-height: 1.75;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image: repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(58,46,68,0.18) 60px),
+                    repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(58,46,68,0.18) 60px);
+  pointer-events: none; z-index: 0;
+}
+
+.wrap { position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; padding: 0 2rem; }
+
+#site-header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(7,5,10,0.88); backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(201,164,62,0.15); padding: 0.85rem 0;
+}
+.header-inner { display: flex; align-items: center; justify-content: space-between; }
+.site-logo { font-family: var(--ff-head); font-size: 1.1rem; color: var(--gold); text-decoration: none; }
+.site-logo span { display: block; font-size: 0.55rem; letter-spacing: 0.35em; color: var(--muted); font-family: var(--ff-sub); text-transform: uppercase; }
+
+#hero { min-height: 40vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 5rem 2rem; }
+.hero-title { font-family: var(--ff-head); font-size: clamp(2.8rem, 8vw, 6rem); color: var(--gold); line-height: 1.05; margin-bottom: 1rem; }
+.hero-subtitle { font-family: var(--ff-head); font-size: 1.4rem; color: var(--crimson); margin-bottom: 2rem; }
+
+#player-container {
+  margin-bottom: 4rem;
+  background: var(--deep);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.player-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0,0,0,0.2);
+}
+.player-now-playing { font-family: var(--ff-sub); font-size: 0.8rem; color: var(--gold); }
+#player-title { font-family: var(--ff-head); font-size: 1.2rem; color: var(--ash); }
+#embed-target { width: 100%; min-height: 200px; background: #000; display: flex; align-items: center; justify-content: center; }
+
+.section-label { font-family: var(--ff-sub); font-size: 0.68rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--crimson); margin-bottom: 0.6rem; }
+.section-title { font-family: var(--ff-head); font-size: 2rem; color: var(--gold); margin-bottom: 2rem; }
+
+.playlists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 5rem;
+}
+
+.playlist-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.playlist-card:hover { border-color: var(--gold); transform: translateY(-5px); background: var(--panel); }
+.playlist-card.active { border-color: var(--gold); background: var(--panel); box-shadow: 0 0 20px rgba(201,164,62,0.1); }
+.playlist-card h3 { font-family: var(--ff-head); color: var(--ash); font-size: 1.4rem; margin-bottom: 1rem; }
+.tag-container { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+.genre-tag { font-family: var(--ff-sub); font-size: 0.55rem; padding: 2px 7px; border: 1px solid var(--faint); color: var(--muted); }
+
+#site-footer { border-top: 1px solid var(--border); padding: 3rem 0; text-align: center; }
+.footer-copy { font-family: var(--ff-sub); font-size: 0.65rem; color: var(--faint); }
+
+.reveal { opacity: 0; transform: translateY(20px); transition: all 0.7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<header id="site-header">
+  <div class="wrap header-inner">
+    <a href="#" class="site-logo">Fractured Cynicism <span>Official Archive</span></a>
+  </div>
+</header>
+
+<section id="hero">
+  <div class="hero-subtitle">Sanskrit · Hindi · Bangla</div>
+  <h1 class="hero-title">Fractured Cynicism</h1>
+</section>
+
+<div class="wrap">
+  <div id="player-container" class="reveal">
+    <div class="player-header">
+      <div class="player-now-playing">NOW STREAMING</div>
+      <div id="player-title">Select a playlist below</div>
+    </div>
+    <div id="embed-target">
+      <div style="color:var(--faint); font-family:var(--ff-sub); font-size:0.8rem;">Waiting for selection...</div>
+    </div>
+  </div>
+
+  <section id="playlists">
+    <div class="section-label reveal">Archives</div>
+    <h2 class="section-title reveal">The Collections</h2>
+    <div class="playlists-grid" id="dynamic-grid">
+      <!-- Loading State -->
+      <div style="grid-column: 1/-1; text-align: center; color: var(--gold); font-family: var(--ff-sub);">Loading Archives...</div>
+    </div>
+  </section>
+</div>
+
+<footer id="site-footer">
+  <div class="wrap">
+    <div class="footer-copy">© Fractured Cynicism · All Rights Reserved</div>
+  </div>
+</footer>
+
+<script>
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRqw0dLIiyXXqoZ0CQpKM0-nu9Ld0s8BAmSozG9o3dS37EnL_PDB5mvqn2S5tegrro81ZbL_H4nPtLu/pub?gid=0&single=true&output=csv';
+
+// Robust CSV Parser to handle quotes and commas in embed codes
+function parseCSV(text) {
+  const rows = [];
+  let currentRow = [];
+  let currentField = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const nextChar = text[i + 1];
+
+    if (char === '"' && inQuotes && nextChar === '"') {
+      currentField += '"'; 
+      i++; 
+    } else if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === ',' && !inQuotes) {
+      currentRow.push(currentField);
+      currentField = '';
+    } else if ((char === '\r' || char === '\n') && !inQuotes) {
+      if (currentField || currentRow.length > 0) {
+        currentRow.push(currentField);
+        rows.push(currentRow);
+      }
+      currentRow = [];
+      currentField = '';
+      if (char === '\r' && nextChar === '\n') i++;
+    } else {
+      currentField += char;
+    }
+  }
+  if (currentField || currentRow.length > 0) {
+    currentRow.push(currentField);
+    rows.push(currentRow);
+  }
+  return rows;
+}
+
+async function loadPlaylists() {
+  try {
+    const response = await fetch(SHEET_CSV_URL);
+    if (!response.ok) throw new Error('Network response was not ok');
+    
+    const csvText = await response.text();
+    const allData = parseCSV(csvText);
+    const rows = allData.slice(1); // Remove header
+
+    const grid = document.getElementById('dynamic-grid');
+    grid.innerHTML = ''; 
+
+    if (rows.length === 0) {
+      grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center;">No playlists found in sheet.</div>';
+      return;
+    }
+
+    rows.forEach((cols) => {
+      const title = cols[0];
+      const embedCode = cols[1];
+      const tags = cols[2];
+
+      if (title && embedCode) {
+        const card = document.createElement('div');
+        card.className = 'playlist-card reveal';
+        
+        const tagHtml = tags ? tags.split(',').map(t => `<span class="genre-tag">${t.trim()}</span>`).join('') : '';
+
+        card.innerHTML = `
+          <h3>${title}</h3>
+          <div class="tag-container">${tagHtml}</div>
+        `;
+
+        card.onclick = () => {
+          document.querySelectorAll('.playlist-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          document.getElementById('player-title').textContent = title;
+          document.getElementById('embed-target').innerHTML = embedCode;
+          document.getElementById('player-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        };
+
+        grid.appendChild(card);
+      }
+    });
+
+    initReveal();
+  } catch (e) {
+    console.error("Full Error:", e);
+    document.getElementById('dynamic-grid').innerHTML = `<div style="grid-column: 1/-1; text-align: center; color:var(--crimson)">Error loading archives. Please check your Google Sheet publication settings.</div>`;
+  }
+}
+
+function initReveal() {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+}
+
+document.addEventListener('DOMContentLoaded', loadPlaylists);
+</script>
+</body>
+</html>
