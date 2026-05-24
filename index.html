@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fractured Cynicism · Showcase Player</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════
+   TOKENS & RESET
+═══════════════════════════════════════════ */
+:root {
+  --bg:        #080808;
+  --surface:   #0f0f0f;
+  --panel:     #141414;
+  --border:    #222222;
+  --accent:    #c8ff00;       /* electric chartreuse */
+  --accent2:   #ff3c3c;       /* danger red */
+  --text:      #e8e8e8;
+  --muted:     #555555;
+  --dim:       #333333;
+  --track-h:   4px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* noise overlay */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ═══════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════ */
+header {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  height: 64px;
+}
+
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 0.12em;
+  line-height: 1;
+}
+.logo span { color: var(--accent); }
+
+.header-tag {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  justify-self: center;
+}
+
+.header-right {
+  justify-self: end;
+  display: flex; gap: 1rem; align-items: center;
+}
+
+.live-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.6); }
+}
+
+/* ═══════════════════════════════════════════
+   LAYOUT GRID
+═══════════════════════════════════════════ */
+.shell {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  grid-template-rows: 1fr auto;
+  min-height: calc(100vh - 64px);
+}
+
+/* ═══════════════════════════════════════════
+   SIDEBAR — ALBUM SELECTOR
+═══════════════════════════════════════════ */
+aside {
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-head {
+  padding: 1rem 1.2rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-head h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+}
+
+.search-box {
+  position: relative;
+  margin-top: 0.6rem;
+}
+.search-box input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  padding: 6px 10px 6px 28px;
+  outline: none;
+  transition: border-color .2s;
+}
+.search-box input:focus { border-color: var(--accent); }
+.search-box::before {
+  content: '⌕';
+  position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); font-size: 14px; pointer-events: none;
+}
+
+.album-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.4rem 0;
+}
+.album-list::-webkit-scrollbar { width: 4px; }
+.album-list::-webkit-scrollbar-track { background: transparent; }
+.album-list::-webkit-scrollbar-thumb { background: var(--dim); }
+
+.album-item {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 0.7rem;
+  align-items: center;
+  padding: 0.55rem 1rem;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: background .15s, border-color .15s;
+}
+.album-item:hover  { background: var(--surface); border-left-color: var(--dim); }
+.album-item.active { background: var(--panel); border-left-color: var(--accent); }
+
+.album-thumb {
+  width: 48px; height: 48px;
+  object-fit: cover;
+  background: var(--dim);
+  display: block;
+  image-rendering: auto;
+}
+.album-thumb-placeholder {
+  width: 48px; height: 48px;
+  background: var(--dim);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted); font-size: 18px;
+  flex-shrink: 0;
+}
+
+.album-info { overflow: hidden; }
+.album-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+.album-meta {
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+/* status states */
+.sidebar-status {
+  padding: 2rem 1.2rem;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.8;
+}
+.sidebar-status .err { color: var(--accent2); }
+
+/* ═══════════════════════════════════════════
+   MAIN STAGE
+═══════════════════════════════════════════ */
+main {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ─── Hero / Album Detail ─── */
+.album-hero {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 2rem;
+  padding: 2rem;
+  border-bottom: 1px solid var(--border);
+  min-height: 240px;
+}
+
+.hero-art {
+  position: relative;
+  width: 220px; height: 220px;
+  flex-shrink: 0;
+}
+.hero-art img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.hero-art-placeholder {
+  width: 220px; height: 220px;
+  background: var(--panel);
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border);
+}
+.hero-art-placeholder svg { opacity: 0.15; }
+
+/* spinning vinyl when playing */
+.vinyl-ring {
+  position: absolute; inset: -8px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  opacity: 0;
+  animation: none;
+  pointer-events: none;
+}
+body.is-playing .vinyl-ring {
+  opacity: 0.6;
+  animation: spin 8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.hero-info { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.hero-identifier {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.4rem;
+  letter-spacing: 0.06em;
+  line-height: 1.05;
+}
+.hero-creator {
+  font-size: 11px;
+  color: var(--muted);
+  font-style: italic;
+}
+.hero-desc {
+  font-size: 12px;
+  color: #888;
+  line-height: 1.7;
+  margin-top: 0.4rem;
+  max-height: 70px;
+  overflow: hidden;
+  position: relative;
+}
+.hero-desc::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 24px;
+  background: linear-gradient(transparent, var(--bg));
+}
+
+.hero-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: auto; }
+.tag {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+/* ─── Track List ─── */
+.tracklist {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+.tracklist::-webkit-scrollbar { width: 4px; }
+.tracklist::-webkit-scrollbar-thumb { background: var(--dim); }
+
+.tracklist-head {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  padding: 0.5rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  position: sticky; top: 0;
+  background: var(--bg);
+  z-index: 10;
+}
+
+.track-row {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: center;
+  padding: 0 1.5rem;
+  height: 44px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .12s;
+  gap: 0.8rem;
+}
+.track-row:hover  { background: var(--surface); }
+.track-row.active { background: var(--panel); }
+.track-row.active .track-num { color: var(--accent); }
+.track-row.active .track-name { color: var(--accent); }
+
+.track-num {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: right;
+  font-family: 'Space Mono', monospace;
+}
+.track-name {
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.track-dur {
+  font-size: 10px;
+  color: var(--muted);
+  font-family: 'Space Mono', monospace;
+}
+
+.bars-icon {
+  display: none;
+  align-items: center; gap: 2px;
+}
+.track-row.active .bars-icon { display: flex; }
+.track-row.active .track-num { display: none; }
+
+.bar {
+  width: 2px;
+  background: var(--accent);
+  border-radius: 1px;
+  animation: barAnim 0.6s ease-in-out infinite alternate;
+}
+.bar:nth-child(1) { height: 8px;  animation-delay: 0s; }
+.bar:nth-child(2) { height: 14px; animation-delay: .15s; }
+.bar:nth-child(3) { height: 6px;  animation-delay: .3s; }
+
+body:not(.is-playing) .bar { animation: none; height: 6px; }
+
+@keyframes barAnim {
+  from { transform: scaleY(0.4); }
+  to   { transform: scaleY(1); }
+}
+
+/* empty / loading state */
+.stage-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--muted);
+}
+.stage-empty .big-glyph {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 6rem;
+  letter-spacing: 0.1em;
+  color: var(--dim);
+  line-height: 1;
+}
+.stage-empty p { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; }
+
+/* ═══════════════════════════════════════════
+   PLAYER BAR (sticky bottom)
+═══════════════════════════════════════════ */
+.player-bar {
+  grid-column: 1 / -1;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  padding: 0 1.5rem;
+  height: 80px;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* left: track info */
+.now-playing {
+  display: flex; align-items: center; gap: 0.8rem; overflow: hidden;
+}
+.now-thumb {
+  width: 44px; height: 44px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+.now-info { overflow: hidden; }
+.now-title {
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'Space Mono', monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.now-album {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* center: controls + progress */
+.player-center { display: flex; flex-direction: column; gap: 0.5rem; align-items: center; }
+
+.controls {
+  display: flex; align-items: center; gap: 1.2rem;
+}
+
+.ctrl-btn {
+  background: none; border: none; cursor: pointer;
+  color: var(--text);
+  display: flex; align-items: center; justify-content: center;
+  transition: color .15s, transform .1s;
+  padding: 0;
+}
+.ctrl-btn:hover { color: var(--accent); transform: scale(1.1); }
+.ctrl-btn svg { width: 16px; height: 16px; fill: currentColor; }
+
+.play-btn {
+  width: 40px; height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.play-btn:hover, .play-btn.active {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+.play-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+/* progress track */
+.progress-row {
+  display: flex; align-items: center; gap: 0.6rem;
+  width: 100%;
+}
+.time-label {
+  font-size: 9px;
+  color: var(--muted);
+  font-family: 'Space Mono', monospace;
+  width: 34px;
+  flex-shrink: 0;
+}
+.time-label.right { text-align: right; }
+
+.progress-track {
+  flex: 1;
+  height: var(--track-h);
+  background: var(--dim);
+  position: relative;
+  cursor: pointer;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  width: 0%;
+  transition: width 0.25s linear;
+  pointer-events: none;
+}
+.progress-thumb {
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  width: 10px; height: 10px;
+  background: var(--accent);
+  left: 0%;
+  margin-left: -5px;
+  transition: left 0.25s linear;
+  pointer-events: none;
+}
+
+/* right: volume */
+.player-right {
+  display: flex; align-items: center; justify-content: flex-end; gap: 0.6rem;
+}
+
+.volume-icon { color: var(--muted); }
+.volume-icon svg { width: 14px; height: 14px; fill: currentColor; }
+
+.vol-track {
+  width: 80px; height: 3px;
+  background: var(--dim);
+  cursor: pointer;
+  position: relative;
+}
+.vol-fill { height: 100%; background: var(--accent); width: 80%; }
+
+/* archive link */
+.archive-link {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  text-decoration: none;
+  text-transform: uppercase;
+  border: 1px solid var(--border);
+  padding: 3px 8px;
+  transition: color .15s, border-color .15s;
+  white-space: nowrap;
+}
+.archive-link:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ═══════════════════════════════════════════
+   MARQUEE TICKER
+═══════════════════════════════════════════ */
+.ticker {
+  background: var(--accent);
+  color: var(--bg);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  height: 22px;
+  overflow: hidden;
+  position: relative;
+  grid-column: 1 / -1;
+}
+.ticker-inner {
+  display: flex;
+  white-space: nowrap;
+  animation: ticker 30s linear infinite;
+  height: 100%;
+  align-items: center;
+}
+.ticker-inner span { padding: 0 3rem; }
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* hidden audio */
+audio { display: none; }
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .shell { grid-template-columns: 1fr; }
+  aside { border-right: none; border-bottom: 1px solid var(--border); max-height: 240px; }
+  .album-hero { grid-template-columns: 1fr; }
+  .hero-art, .hero-art img { width: 140px; height: 140px; }
+  header { grid-template-columns: 1fr auto; }
+  .header-tag { display: none; }
+  .player-bar { grid-template-columns: 1fr 2fr; }
+  .player-right { display: none; }
+}
+
+/* ═══════════════════════════════════════════
+   GLITCH EFFECT (hover logo)
+═══════════════════════════════════════════ */
+.logo:hover {
+  animation: glitch 0.3s steps(2) infinite;
+}
+@keyframes glitch {
+  0%   { text-shadow:  2px 0 var(--accent2), -2px 0 var(--accent); }
+  50%  { text-shadow: -2px 0 var(--accent2),  2px 0 var(--accent); }
+  100% { text-shadow:  1px 0 var(--accent), -1px 0 var(--accent2); }
+}
+
+/* loading spinner */
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  display: inline-block;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="logo">FRACTURED <span>CYNICISM</span></div>
+  <div class="header-tag">Showcase Player</div>
+  <div class="header-right">
+    <div class="live-dot" title="Live from Archive.org"></div>
+    <span style="font-size:10px;color:var(--muted);letter-spacing:.1em">ARCHIVE.ORG</span>
+  </div>
+</header>
+
+<!-- ══ TICKER ══ -->
+<div class="ticker" id="ticker">
+  <div class="ticker-inner" id="tickerInner">
+    <span>FRACTURED CYNICISM · SHOWCASE PLAYER · SELECT AN ALBUM TO BEGIN · POWERED BY ARCHIVE.ORG ·</span>
+    <span>FRACTURED CYNICISM · SHOWCASE PLAYER · SELECT AN ALBUM TO BEGIN · POWERED BY ARCHIVE.ORG ·</span>
+  </div>
+</div>
+
+<!-- ══ MAIN SHELL ══ -->
+<div class="shell">
+
+  <!-- ── SIDEBAR ── -->
+  <aside>
+    <div class="sidebar-head">
+      <h2>Albums</h2>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="filter..." autocomplete="off">
+      </div>
+    </div>
+    <div class="album-list" id="albumList">
+      <div class="sidebar-status">
+        <div class="spinner"></div>
+        <br>Loading from Archive.org…
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── STAGE ── -->
+  <main id="stage">
+    <div class="stage-empty" id="stageEmpty">
+      <div class="big-glyph">FC</div>
+      <p>Select an album to begin</p>
+    </div>
+  </main>
+
+  <!-- ── PLAYER BAR ── -->
+  <div class="player-bar">
+    <!-- left -->
+    <div class="now-playing" id="nowPlaying">
+      <div style="width:44px;height:44px;background:var(--dim);border:1px solid var(--border);"></div>
+      <div class="now-info">
+        <div class="now-title" id="nowTitle">—</div>
+        <div class="now-album" id="nowAlbum">No track selected</div>
+      </div>
+    </div>
+
+    <!-- center -->
+    <div class="player-center">
+      <div class="controls">
+        <!-- shuffle -->
+        <button class="ctrl-btn" id="btnShuffle" title="Shuffle">
+          <svg viewBox="0 0 24 24"><path d="M17 17h2v2l4-3-4-3v2h-2c-1.4 0-2.5-.7-3.3-1.7L12 11.9l-.7.9C10.1 14.2 8.6 15 7 15H3v-2h4c.9 0 1.7-.5 2.3-1.3L11 10l-1.7-1.7C8.7 7.5 7.9 7 7 7H3V5h4c1.6 0 3.1.8 4.3 2.1L13 8.9l1.7-1.8C15.9 5.8 17.4 5 19 5h2v2h-2c-.9 0-1.7.5-2.3 1.3L15 10l1.7 1.7c.6.8 1.4 1.3 2.3 1.3z"/></svg>
+        </button>
+        <!-- prev -->
+        <button class="ctrl-btn" id="btnPrev" title="Previous">
+          <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+        </button>
+        <!-- play/pause -->
+        <button class="play-btn" id="btnPlay" title="Play / Pause">
+          <svg viewBox="0 0 24 24" id="playIcon"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <!-- next -->
+        <button class="ctrl-btn" id="btnNext" title="Next">
+          <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+        </button>
+        <!-- repeat -->
+        <button class="ctrl-btn" id="btnRepeat" title="Repeat">
+          <svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+        </button>
+      </div>
+      <div class="progress-row">
+        <span class="time-label" id="timeCurrent">0:00</span>
+        <div class="progress-track" id="progressTrack">
+          <div class="progress-fill" id="progressFill"></div>
+          <div class="progress-thumb" id="progressThumb"></div>
+        </div>
+        <span class="time-label right" id="timeDuration">0:00</span>
+      </div>
+    </div>
+
+    <!-- right -->
+    <div class="player-right">
+      <span class="volume-icon">
+        <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.8-1-3.3-2.5-4.1v8.2c1.5-.8 2.5-2.3 2.5-4.1zM14 3.2v2.1c2.9.9 5 3.6 5 6.7s-2.1 5.8-5 6.7v2.1c4-.9 7-4.5 7-8.8S18 4.1 14 3.2z"/></svg>
+      </span>
+      <div class="vol-track" id="volTrack">
+        <div class="vol-fill" id="volFill"></div>
+      </div>
+      <a href="https://archive.org/details/@fractured_cynicism" target="_blank" class="archive-link">View on Archive</a>
+    </div>
+  </div>
+
+</div><!-- /shell -->
+
+<audio id="audioEl"></audio>
+
+<!-- ══════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════ -->
+<script>
+const UPLOADER = 'fractured_cynicism';
+const API_SEARCH = `https://archive.org/advancedsearch.php?q=uploader:${UPLOADER}+mediatype:audio&output=json&rows=100&fl[]=identifier,title,description,subject,year,creator,date&sort[]=date+desc`;
+const META_URL  = id => `https://archive.org/metadata/${id}`;
+const IMG_URL   = id => `https://archive.org/services/img/${id}`;
+const DL_URL    = (id, file) => `https://archive.org/download/${id}/${encodeURIComponent(file)}`;
+
+/* ── State ── */
+let albums       = [];
+let filteredAlbums = [];
+let currentAlbum = null;
+let tracks       = [];
+let trackIdx     = -1;
+let shuffleOn    = false;
+let repeatOn     = false;
+let albumArtUrl  = '';
+
+const audio = document.getElementById('audioEl');
+
+/* ── DOM refs ── */
+const albumList     = document.getElementById('albumList');
+const stage         = document.getElementById('stage');
+const stageEmpty    = document.getElementById('stageEmpty');
+const searchInput   = document.getElementById('searchInput');
+const btnPlay       = document.getElementById('btnPlay');
+const btnPrev       = document.getElementById('btnPrev');
+const btnNext       = document.getElementById('btnNext');
+const btnShuffle    = document.getElementById('btnShuffle');
+const btnRepeat     = document.getElementById('btnRepeat');
+const progressTrack = document.getElementById('progressTrack');
+const progressFill  = document.getElementById('progressFill');
+const progressThumb = document.getElementById('progressThumb');
+const timeCurrent   = document.getElementById('timeCurrent');
+const timeDuration  = document.getElementById('timeDuration');
+const nowTitle      = document.getElementById('nowTitle');
+const nowAlbum      = document.getElementById('nowAlbum');
+const nowPlaying    = document.getElementById('nowPlaying');
+const volTrack      = document.getElementById('volTrack');
+const volFill       = document.getElementById('volFill');
+const tickerInner   = document.getElementById('tickerInner');
+const playIcon      = document.getElementById('playIcon');
+
+/* ══════════════════════════════════════════
+   FETCH ALBUMS
+══════════════════════════════════════════ */
+async function loadAlbums() {
+  try {
+    const res  = await fetch(API_SEARCH);
+    const data = await res.json();
+    albums = data.response?.docs || [];
+
+    if (!albums.length) {
+      albumList.innerHTML = `<div class="sidebar-status err">No audio items found for @${UPLOADER}.</div>`;
+      return;
+    }
+
+    filteredAlbums = albums;
+    renderAlbumList();
+  } catch (e) {
+    albumList.innerHTML = `<div class="sidebar-status err">Could not reach Archive.org.<br>${e.message}</div>`;
+  }
+}
+
+function renderAlbumList() {
+  if (!filteredAlbums.length) {
+    albumList.innerHTML = `<div class="sidebar-status">No results.</div>`;
+    return;
+  }
+
+  albumList.innerHTML = filteredAlbums.map((a, i) => `
+    <div class="album-item ${currentAlbum?.identifier === a.identifier ? 'active' : ''}"
+         data-idx="${i}" onclick="selectAlbum(${i})">
+      <img class="album-thumb"
+           src="${IMG_URL(a.identifier)}"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+           alt="">
+      <div class="album-thumb-placeholder" style="display:none">♪</div>
+      <div class="album-info">
+        <div class="album-title">${escHtml(a.title || a.identifier)}</div>
+        <div class="album-meta">${escHtml(a.creator || a.year || '—')}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ══════════════════════════════════════════
+   SELECT ALBUM → LOAD METADATA
+══════════════════════════════════════════ */
+async function selectAlbum(idx) {
+  const album = filteredAlbums[idx];
+  if (!album) return;
+  currentAlbum = album;
+  albumArtUrl  = IMG_URL(album.identifier);
+  trackIdx     = -1;
+  tracks       = [];
+
+  // highlight sidebar
+  document.querySelectorAll('.album-item').forEach((el,i) =>
+    el.classList.toggle('active', i === idx));
+
+  // show loading stage
+  stage.innerHTML = `
+    <div class="stage-empty">
+      <div class="spinner"></div>
+      <p style="margin-top:.5rem">Loading tracks…</p>
+    </div>`;
+
+  try {
+    const res  = await fetch(META_URL(album.identifier));
+    const meta = await res.json();
+
+    // filter audio files (mp3, ogg, flac, opus)
+    const audioExts = /\.(mp3|ogg|flac|opus|wav|aac|m4a)$/i;
+    const rawFiles  = (meta.files || []).filter(f => audioExts.test(f.name));
+
+    // prefer original or mp3 (avoid duplicates like "_vbr.mp3")
+    const seen = new Set();
+    tracks = rawFiles.filter(f => {
+      const base = f.name.replace(/_vbr|_128kb|_64kb/gi, '').toLowerCase();
+      if (seen.has(base)) return false;
+      seen.add(base); return true;
+    });
+
+    if (!tracks.length) {
+      stage.innerHTML = `<div class="stage-empty"><p>No playable audio files found.</p></div>`;
+      return;
+    }
+
+    const tags = buildTags(meta.metadata);
+    const desc = meta.metadata?.description || '';
+
+    renderStage(meta, tags, desc);
+    updateTicker(album.title || album.identifier);
+  } catch(e) {
+    stage.innerHTML = `<div class="stage-empty"><p style="color:var(--accent2)">Error loading metadata.<br>${e.message}</p></div>`;
+  }
+}
+
+function buildTags(md) {
+  if (!md) return [];
+  const raw = Array.isArray(md.subject) ? md.subject
+            : typeof md.subject === 'string' ? md.subject.split(';')
+            : [];
+  return raw.map(s => s.trim()).filter(Boolean).slice(0, 8);
+}
+
+/* ══════════════════════════════════════════
+   RENDER STAGE
+══════════════════════════════════════════ */
+function renderStage(meta, tags, desc) {
+  const md = meta.metadata || {};
+  const title   = md.title || currentAlbum.identifier;
+  const creator = md.creator || md.artist || '';
+  const year    = md.year || md.date?.slice(0,4) || '';
+
+  const tagHtml = tags.map(t => `<span class="tag">${escHtml(t)}</span>`).join('');
+
+  const trackRows = tracks.map((t, i) => {
+    const name = formatTrackName(t.name);
+    const dur  = formatSecs(parseFloat(t.length) || 0);
+    return `
+      <div class="track-row" id="tr_${i}" onclick="playTrack(${i})">
+        <div class="track-num">
+          <div class="bars-icon">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
+          <span class="num-label">${String(i+1).padStart(2,'0')}</span>
+        </div>
+        <div class="track-name">${escHtml(name)}</div>
+        <div class="track-dur">${dur || '—'}</div>
+      </div>`;
+  }).join('');
+
+  stage.innerHTML = `
+    <div class="album-hero">
+      <div class="hero-art">
+        <img src="${albumArtUrl}" alt="" onerror="this.style.display='none'">
+        <div class="vinyl-ring"></div>
+      </div>
+      <div class="hero-info">
+        <div class="hero-identifier">${escHtml(currentAlbum.identifier)}</div>
+        <div class="hero-title">${escHtml(title)}</div>
+        ${creator ? `<div class="hero-creator">${escHtml(creator)}${year ? ' · '+year : ''}</div>` : ''}
+        ${desc    ? `<div class="hero-desc">${escHtml(stripHtml(desc)).slice(0,300)}</div>` : ''}
+        <div class="hero-tags">${tagHtml}</div>
+      </div>
+    </div>
+    <div class="tracklist">
+      <div class="tracklist-head">
+        <div>#</div><div>Track</div><div>Dur</div>
+      </div>
+      ${trackRows}
+    </div>`;
+}
+
+/* ══════════════════════════════════════════
+   PLAYBACK
+══════════════════════════════════════════ */
+function playTrack(i) {
+  if (i < 0 || i >= tracks.length) return;
+  trackIdx = i;
+
+  const t   = tracks[i];
+  const url = DL_URL(currentAlbum.identifier, t.name);
+
+  audio.src = url;
+  audio.play().catch(e => console.warn('Play blocked:', e));
+
+  // highlight row
+  document.querySelectorAll('.track-row').forEach((el, j) => {
+    el.classList.toggle('active', j === i);
+    const numLabel = el.querySelector('.num-label');
+    if (numLabel) numLabel.style.display = j === i ? 'none' : '';
+  });
+
+  // update now-playing bar
+  const name = formatTrackName(t.name);
+  nowTitle.textContent  = name;
+  nowAlbum.textContent  = currentAlbum.title || currentAlbum.identifier;
+
+  // update thumb in player bar
+  const thumbEl = nowPlaying.querySelector('img,div');
+  if (thumbEl) {
+    const img = document.createElement('img');
+    img.className = 'now-thumb';
+    img.src = albumArtUrl;
+    img.onerror = () => { img.style.display='none'; };
+    nowPlaying.replaceChild(img, thumbEl);
+  }
+
+  setPlaying(true);
+}
+
+function setPlaying(val) {
+  document.body.classList.toggle('is-playing', val);
+  btnPlay.classList.toggle('active', val);
+  playIcon.innerHTML = val
+    ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'  /* pause */
+    : '<path d="M8 5v14l11-7z"/>';                       /* play  */
+}
+
+btnPlay.addEventListener('click', () => {
+  if (trackIdx < 0 && tracks.length) { playTrack(0); return; }
+  if (audio.paused) { audio.play(); setPlaying(true); }
+  else              { audio.pause(); setPlaying(false); }
+});
+
+btnNext.addEventListener('click', () => {
+  if (!tracks.length) return;
+  if (shuffleOn) { playTrack(Math.floor(Math.random() * tracks.length)); }
+  else           { playTrack((trackIdx + 1) % tracks.length); }
+});
+
+btnPrev.addEventListener('click', () => {
+  if (!tracks.length) return;
+  if (audio.currentTime > 3) { audio.currentTime = 0; return; }
+  playTrack((trackIdx - 1 + tracks.length) % tracks.length);
+});
+
+btnShuffle.addEventListener('click', () => {
+  shuffleOn = !shuffleOn;
+  btnShuffle.style.color = shuffleOn ? 'var(--accent)' : '';
+});
+
+btnRepeat.addEventListener('click', () => {
+  repeatOn = !repeatOn;
+  audio.loop = repeatOn;
+  btnRepeat.style.color = repeatOn ? 'var(--accent)' : '';
+});
+
+audio.addEventListener('ended', () => {
+  if (repeatOn) return;
+  if (shuffleOn) { playTrack(Math.floor(Math.random() * tracks.length)); return; }
+  const next = trackIdx + 1;
+  if (next < tracks.length) playTrack(next);
+  else setPlaying(false);
+});
+
+/* ── Progress bar ── */
+audio.addEventListener('timeupdate', () => {
+  const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+  progressFill.style.width  = pct + '%';
+  progressThumb.style.left  = pct + '%';
+  timeCurrent.textContent   = formatSecs(audio.currentTime);
+  timeDuration.textContent  = formatSecs(audio.duration || 0);
+});
+
+progressTrack.addEventListener('click', e => {
+  const rect = progressTrack.getBoundingClientRect();
+  const pct  = (e.clientX - rect.left) / rect.width;
+  audio.currentTime = pct * (audio.duration || 0);
+});
+
+/* ── Volume ── */
+audio.volume = 0.8;
+volFill.style.width = '80%';
+
+volTrack.addEventListener('click', e => {
+  const rect = volTrack.getBoundingClientRect();
+  const pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  audio.volume = pct;
+  volFill.style.width = (pct * 100) + '%';
+});
+
+/* ── Keyboard shortcuts ── */
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.code === 'Space')      { e.preventDefault(); btnPlay.click(); }
+  if (e.code === 'ArrowRight') { e.preventDefault(); audio.currentTime += 10; }
+  if (e.code === 'ArrowLeft')  { e.preventDefault(); audio.currentTime -= 10; }
+  if (e.code === 'KeyN')       btnNext.click();
+  if (e.code === 'KeyP')       btnPrev.click();
+});
+
+/* ── Deep-link: ?album=identifier ── */
+function checkDeepLink() {
+  const params = new URLSearchParams(window.location.search);
+  const id     = params.get('album');
+  if (!id) return;
+  const idx = filteredAlbums.findIndex(a => a.identifier === id);
+  if (idx >= 0) selectAlbum(idx);
+}
+
+/* ── Search filter ── */
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.toLowerCase();
+  filteredAlbums = albums.filter(a =>
+    (a.title || '').toLowerCase().includes(q) ||
+    (a.creator || '').toLowerCase().includes(q) ||
+    (a.identifier || '').toLowerCase().includes(q)
+  );
+  renderAlbumList();
+});
+
+/* ══════════════════════════════════════════
+   TICKER UPDATE
+══════════════════════════════════════════ */
+function updateTicker(text) {
+  const msg = `NOW LOADING · ${text.toUpperCase()} · FRACTURED CYNICISM · `;
+  tickerInner.innerHTML = `<span>${msg}</span><span>${msg}</span>`;
+}
+
+/* ══════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════ */
+function formatSecs(s) {
+  if (!s || isNaN(s)) return '0:00';
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return `${m}:${String(sec).padStart(2,'0')}`;
+}
+
+function formatTrackName(filename) {
+  return filename
+    .replace(/\.\w{2,5}$/, '')        // remove extension
+    .replace(/^[\d\-_]+/, '')         // remove leading numbers
+    .replace(/[_-]+/g, ' ')           // underscores/dashes → spaces
+    .trim();
+}
+
+function stripHtml(str) {
+  return str.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+/* ══════════════════════════════════════════
+   BOOT
+══════════════════════════════════════════ */
+loadAlbums().then(checkDeepLink);
+</script>
+</body>
+</html>
