@@ -3,256 +3,463 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fractured Cynicism — Official Archive</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
-
+<title>Fractured Cynicism · Official Archive</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
-:root {
-  --black:    #07050a;
-  --deep:     #100c14;
-  --surface:  #1a1420;
-  --panel:    #221929;
-  --border:   #3a2e44;
-  --gold:     #c9a43e;
-  --gold-dim: #7a6020;
-  --crimson:  #9b1c1c;
-  --ash:      #e8ddd0;
-  --muted:    #9a8a7a;
-  --faint:    #4a3e50;
-  --ff-head:  'Cinzel Decorative', serif;
-  --ff-sub:   'Cinzel', serif;
-  --ff-body:  'Crimson Pro', Georgia, serif;
-}
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --gold:#c9a84c;--gold-light:#dbb85c;--bg:#0a0906;--surface:#111009;
+    --surface2:#18150f;--border:#222018;--border2:#2a2520;
+    --text:#e8e0d0;--text2:#b8a88a;--text3:#7a6e5e;--text4:#4a4035;
+    --err:#7a3a3a;
+  }
+  html,body{height:100%;background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,serif;-webkit-tap-highlight-color:transparent}
+  body{display:flex;flex-direction:column;min-height:100vh}
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background: var(--black);
-  color: var(--ash);
-  font-family: var(--ff-body);
-  font-size: 17px;
-  line-height: 1.75;
-  overflow-x: hidden;
-}
+  .site-hdr{padding:20px 18px 14px;border-bottom:0.5px solid var(--border2);background:var(--surface)}
+  .site-hdr .lbl{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:4px}
+  .site-hdr h1{font-family:'Cinzel',serif;font-size:22px;font-weight:600;color:var(--text);letter-spacing:.05em}
+  .site-hdr p{font-style:italic;font-size:13px;color:var(--text3);margin-top:2px}
 
-body::before {
-  content: ''; position: fixed; inset: 0;
-  background-image: repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(58,46,68,0.18) 60px),
-                    repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(58,46,68,0.18) 60px);
-  pointer-events: none; z-index: 0;
-}
+  .tag-strip{display:flex;gap:8px;overflow-x:auto;padding:12px 18px;border-bottom:0.5px solid var(--border);scrollbar-width:none}
+  .tag-strip::-webkit-scrollbar{display:none}
+  .tag-btn{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:5px 12px;border-radius:20px;border:0.5px solid var(--border2);background:transparent;color:var(--text3);cursor:pointer;white-space:nowrap;transition:all .15s}
+  .tag-btn:hover{border-color:var(--gold);color:var(--gold)}
+  .tag-btn.active{background:var(--gold);color:#0a0906;border-color:var(--gold)}
 
-.wrap { position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; padding: 0 2rem; }
+  .album-list{flex:1;overflow-y:auto;padding-bottom:235px}
 
-#site-header {
-  position: sticky; top: 0; z-index: 100;
-  background: rgba(7,5,10,0.88); backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(201,164,62,0.15); padding: 0.85rem 0;
-}
-.header-inner { display: flex; align-items: center; justify-content: space-between; }
-.site-logo { font-family: var(--ff-head); font-size: 1.1rem; color: var(--gold); text-decoration: none; }
-.site-logo span { display: block; font-size: 0.55rem; letter-spacing: 0.35em; color: var(--muted); font-family: var(--ff-sub); text-transform: uppercase; }
+  .album-row{display:flex;align-items:center;gap:12px;padding:12px 14px 12px 18px;border-bottom:0.5px solid var(--border);cursor:pointer;transition:background .12s}
+  .album-row:hover{background:var(--surface2)}
+  .album-row.active{background:#1c1810}
 
-#hero { min-height: 40vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 5rem 2rem; }
-.hero-title { font-family: var(--ff-head); font-size: clamp(2.8rem, 8vw, 6rem); color: var(--gold); line-height: 1.05; margin-bottom: 1rem; }
-.hero-subtitle { font-family: var(--ff-head); font-size: 1.4rem; color: var(--crimson); margin-bottom: 2rem; }
+  .album-art{width:46px;height:46px;border-radius:6px;background:var(--surface2);border:0.5px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+  .album-art img{width:100%;height:100%;object-fit:cover;border-radius:5px}
+  .album-art .ph{font-size:20px;color:var(--text4)}
 
-#player-container {
-  margin-bottom: 4rem;
-  background: var(--deep);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  overflow: hidden;
-}
-.player-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(0,0,0,0.2);
-}
-.player-now-playing { font-family: var(--ff-sub); font-size: 0.8rem; color: var(--gold); }
-#player-title { font-family: var(--ff-head); font-size: 1.2rem; color: var(--ash); }
-#embed-target { width: 100%; min-height: 200px; background: #000; display: flex; align-items: center; justify-content: center; }
+  .album-info{flex:1;overflow:hidden;min-width:0}
+  .album-title{font-size:16px;font-style:italic;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .album-row.active .album-title{color:var(--text)}
+  .album-tags{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.08em;color:var(--text4);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase}
+  .album-row.active .album-tags{color:var(--gold)}
 
-.section-label { font-family: var(--ff-sub); font-size: 0.68rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--crimson); margin-bottom: 0.6rem; }
-.section-title { font-family: var(--ff-head); font-size: 2rem; color: var(--gold); margin-bottom: 2rem; }
+  .album-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+  .album-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);display:none;animation:pulse 1.4s ease-in-out infinite}
+  .album-row.active .album-dot{display:block}
 
-.playlists-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 5rem;
-}
+  .share-btn{background:none;border:none;cursor:pointer;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text4);font-size:16px;transition:background .15s,color .15s;flex-shrink:0}
+  .share-btn:hover{background:var(--surface2);color:var(--gold)}
+  .share-btn:active{transform:scale(.9)}
 
-.playlist-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 2rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
-  min-height: 180px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.playlist-card:hover { border-color: var(--gold); transform: translateY(-5px); background: var(--panel); }
-.playlist-card.active { border-color: var(--gold); background: var(--panel); box-shadow: 0 0 20px rgba(201,164,62,0.1); }
-.playlist-card h3 { font-family: var(--ff-head); color: var(--ash); font-size: 1.4rem; margin-bottom: 1rem; }
-.tag-container { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
-.genre-tag { font-family: var(--ff-sub); font-size: 0.55rem; padding: 2px 7px; border: 1px solid var(--faint); color: var(--muted); }
+  /* toast */
+  .toast{position:fixed;bottom:260px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e1c18;border:0.5px solid var(--border2);color:var(--text2);font-family:'Cinzel',serif;font-size:11px;letter-spacing:.1em;padding:8px 18px;border-radius:20px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:300;white-space:nowrap}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-#site-footer { border-top: 1px solid var(--border); padding: 3rem 0; text-align: center; }
-.footer-copy { font-family: var(--ff-sub); font-size: 0.65rem; color: var(--faint); }
+  /* player */
+  .player{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:0.5px solid var(--border2);z-index:100}
+  .player-np{padding:12px 18px 8px;border-bottom:0.5px solid var(--border)}
+  .player-np .lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.18em;color:var(--text4);text-transform:uppercase;margin-bottom:3px}
+  .player-np .track-name{font-size:17px;font-style:italic;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .player-np .album-name{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:var(--gold);text-transform:uppercase;margin-top:2px}
 
-.reveal { opacity: 0; transform: translateY(20px); transition: all 0.7s ease; }
-.reveal.visible { opacity: 1; transform: translateY(0); }
+  .prog-area{padding:8px 18px 4px}
+  .prog-bar{width:100%;height:3px;background:var(--border2);border-radius:2px;cursor:pointer;margin-bottom:6px}
+  .prog-fill{height:100%;background:var(--gold);border-radius:2px;width:0%;transition:width .25s linear;pointer-events:none}
+  .time-row{display:flex;justify-content:space-between;font-family:'Cinzel',serif;font-size:10px;color:var(--text4);letter-spacing:.05em}
+
+  .controls{display:flex;align-items:center;justify-content:center;gap:14px;padding:10px 18px 16px}
+  .btn{background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .15s,transform .1s;color:var(--text3)}
+  .btn:active{transform:scale(.9)}
+  .btn-skip{width:52px;height:52px;font-size:22px}
+  .btn-skip:hover{background:var(--surface2);color:var(--gold)}
+  .btn-play{width:68px;height:68px;background:var(--gold);color:#0a0906;font-size:28px;border-radius:50%;box-shadow:0 0 0 5px #1e1a12}
+  .btn-play:hover{background:var(--gold-light)}
+  .btn-list{width:44px;height:44px;font-size:19px}
+  .btn-list:hover{background:var(--surface2);color:var(--gold)}
+
+  .err-bar{padding:6px 18px;font-size:11px;color:var(--err);font-style:italic;display:none}
+
+  /* drawer */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:190;display:none}
+  .overlay.on{display:block}
+  .drawer{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:0.5px solid var(--border2);z-index:200;transform:translateY(100%);transition:transform .3s ease;max-height:60vh;display:flex;flex-direction:column}
+  .drawer.open{transform:translateY(0)}
+  .drawer-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:0.5px solid var(--border);flex-shrink:0}
+  .drawer-title{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.15em;color:var(--gold);text-transform:uppercase}
+  .drawer-close{background:none;border:none;cursor:pointer;color:var(--text3);font-size:20px;padding:4px}
+  .drawer-tracks{overflow-y:auto;flex:1}
+  .drawer-track{display:flex;align-items:center;padding:13px 18px;border-bottom:0.5px solid var(--border);cursor:pointer;gap:12px;transition:background .12s}
+  .drawer-track:hover{background:var(--surface2)}
+  .drawer-track.active{background:#1c1810}
+  .drawer-track-num{font-family:'Cinzel',serif;font-size:11px;color:var(--text4);width:16px;flex-shrink:0}
+  .drawer-track.active .drawer-track-num{color:var(--gold)}
+  .drawer-track-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0;display:none;animation:pulse 1.4s ease-in-out infinite}
+  .drawer-track.active .drawer-track-dot{display:block}
+  .drawer-track-name{flex:1;font-size:16px;font-style:italic;color:var(--text2);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .drawer-track.active .drawer-track-name{color:var(--text)}
+  .drawer-track-dur{font-family:'Cinzel',serif;font-size:11px;color:var(--text4)}
+
+  .empty-state{padding:40px 18px;text-align:center;font-style:italic;color:var(--text4);font-size:15px}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
 </style>
 </head>
 <body>
 
-<header id="site-header">
-  <div class="wrap header-inner">
-    <a href="#" class="site-logo">Fractured Cynicism <span>Official Archive</span></a>
-  </div>
-</header>
-
-<section id="hero">
-  <div class="hero-subtitle">Sanskrit · Hindi · Bangla</div>
-  <h1 class="hero-title">Fractured Cynicism</h1>
-</section>
-
-<div class="wrap">
-  <div id="player-container" class="reveal">
-    <div class="player-header">
-      <div class="player-now-playing">NOW STREAMING</div>
-      <div id="player-title">Select a playlist below</div>
-    </div>
-    <div id="embed-target">
-      <div style="color:var(--faint); font-family:var(--ff-sub); font-size:0.8rem;">Waiting for selection...</div>
-    </div>
-  </div>
-
-  <section id="playlists">
-    <div class="section-label reveal">Archives</div>
-    <h2 class="section-title reveal">The Collections</h2>
-    <div class="playlists-grid" id="dynamic-grid">
-      <!-- Loading State -->
-      <div style="grid-column: 1/-1; text-align: center; color: var(--gold); font-family: var(--ff-sub);">Loading Archives...</div>
-    </div>
-  </section>
+<div class="site-hdr">
+  <div class="lbl">Fractured Cynicism</div>
+  <h1>Official Archive</h1>
+  <p>Select an album to play</p>
 </div>
 
-<footer id="site-footer">
-  <div class="wrap">
-    <div class="footer-copy">© Fractured Cynicism · All Rights Reserved</div>
+<div class="tag-strip" id="tag-strip"></div>
+<div class="album-list" id="album-list"></div>
+
+<div class="player">
+  <div class="player-np">
+    <div class="lbl">Now Playing</div>
+    <div class="track-name" id="np-track">—</div>
+    <div class="album-name" id="np-album">—</div>
   </div>
-</footer>
+  <div class="prog-area">
+    <div class="prog-bar" id="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+    <div class="time-row"><span id="cur-t">0:00</span><span id="dur-t">—</span></div>
+  </div>
+  <div class="err-bar" id="err-bar">Could not load audio.</div>
+  <div class="controls">
+    <button class="btn btn-skip" id="btn-prev" aria-label="Previous"><i class="ti ti-player-skip-back"></i></button>
+    <button class="btn btn-play" id="btn-play" aria-label="Play"><i class="ti ti-player-play" id="play-ico"></i></button>
+    <button class="btn btn-skip" id="btn-next" aria-label="Next"><i class="ti ti-player-skip-forward"></i></button>
+    <button class="btn btn-list" id="btn-list" aria-label="Track list"><i class="ti ti-list"></i></button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-hdr">
+    <span class="drawer-title" id="drawer-title">Tracklist</span>
+    <button class="drawer-close" id="drawer-close" aria-label="Close"><i class="ti ti-x"></i></button>
+  </div>
+  <div class="drawer-tracks" id="drawer-tracks"></div>
+</div>
+
+<div class="toast" id="toast">Link copied</div>
+
+<audio id="audio"></audio>
 
 <script>
-const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRqw0dLIiyXXqoZ0CQpKM0-nu9Ld0s8BAmSozG9o3dS37EnL_PDB5mvqn2S5tegrro81ZbL_H4nPtLu/pub?gid=0&single=true&output=csv';
+// ── ALBUM CATALOGUE ─────────────────────────────────────────────────────────
+// To add a new album: add one line to this array.
+// Format: {title, id, tags}
+// id = the Archive.org identifier from the URL: archive.org/details/YOUR_ID
+const ALBUMS = [
+  {title:"নিমজ্জিত দোকান (Submerged Shop)", id:"Submerged_Shop",          tags:"Bengali, Bangla, jazz, Baul, psychedelic doom"},
+  {title:"Bandhan Se Moksha",                id:"Bandhan_se_moksha",        tags:"Hindi, hard rock"},
+  {title:"Panch Agni",                       id:"Panch_Agni",               tags:"Hindi, alt rock"},
+  {title:"Baal Geet for Broken Adults",      id:"baal-geet-for-broken-adults", tags:"Hindi, alt rock"},
+  {title:"Hymns of the Baul & the Black Goddess", id:"Baul_Black_Goddess", tags:"Bangla, Bengali, psychedelic doom metal"},
+  {title:"Andhaa Tamasha",                   id:"Andhaa_Tamasha",           tags:"Hindi, thrash metal, satire"},
+  {title:"Sukumar Ray's Abol Taabol",        id:"Abol_Taabol",              tags:"Bangla, Bengali, satire, cover"},
+  {title:"Anhad",                            id:"anhad_202605",             tags:"Hindi, alt rock, psy rock, ghazal, thumri"},
+  {title:"Shahar Aur Saaya",                 id:"Shahar_Aur_Saaya",         tags:"Hindi, grunge, rock, alt rock"},
+  {title:"Astitva K Paar",                   id:"Astitva_K_Paar",           tags:"Hindi, thumri, alt rock, psy rock"},
+  {title:"PAṬṬIKĀ BHAṄGA",                  id:"pattika_bhanga",           tags:"Sanskrit, Vedic metal"},
+  {title:"7/8 Saansein",                     id:"7__8_saansein",            tags:"Hindi, thumri, ghazal, alt rock, psy rock"},
+  {title:"Chakra",                           id:"chakra_202605",            tags:"Sanskrit, Vedic metal"},
+  {title:"Moner Alo",                        id:"Moner_Alo",                tags:"Bengali, Baul, Bangla, grunge, alt rock"},
+  {title:"Antarvinasha",                     id:"Antarvinasha",             tags:"Sanskrit, Vedic metal"},
+  {title:"Ghor",                             id:"ghor_20260524",            tags:"Sanskrit, Vedic metal"},
+  {title:"Aatman",                           id:"Aatman",                   tags:"Hindi, alt rock"},
+  {title:"TRINETRA",                         id:"trinetra_202605",          tags:"Hindi, alt rock"},
+  {title:"Kolkatar Kharaap Shopno",          id:"Kolkatar_Kharaap_Shopno",  tags:"Bengali, Bangla, thrash metal"},
+  {title:"Lofi Yaadein",                     id:"Lofi_Yaadein",             tags:"Hindi, soft rock"},
+  {title:"Gauranga Prema",                   id:"Gauranga-prema",           tags:"Hindi, Bhakti, psy doom metal"},
+  {title:"FAIL-SAFE FOR THE SOUL",           id:"fail-safe-forthe-soul",    tags:"English, thrash metal"},
+];
 
-// Robust CSV Parser to handle quotes and commas in embed codes
-function parseCSV(text) {
-  const rows = [];
-  let currentRow = [];
-  let currentField = '';
-  let inQuotes = false;
+// ── STATE ────────────────────────────────────────────────────────────────────
+const trackCache = {};
+let activeTag = 'All';
+let curAlbumIdx = -1;
+let curTrackIdx = 0;
+let playing = false;
+let albumTracks = [];
 
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    const nextChar = text[i + 1];
+// ── ELEMENTS ─────────────────────────────────────────────────────────────────
+const audio       = document.getElementById('audio');
+const playBtn     = document.getElementById('btn-play');
+const playIco     = document.getElementById('play-ico');
+const progBar     = document.getElementById('prog-bar');
+const progFill    = document.getElementById('prog-fill');
+const curEl       = document.getElementById('cur-t');
+const durEl       = document.getElementById('dur-t');
+const npTrack     = document.getElementById('np-track');
+const npAlbum     = document.getElementById('np-album');
+const errBar      = document.getElementById('err-bar');
+const drawer      = document.getElementById('drawer');
+const overlay     = document.getElementById('overlay');
+const drawerTitle = document.getElementById('drawer-title');
+const drawerTracks= document.getElementById('drawer-tracks');
+const albumListEl = document.getElementById('album-list');
+const tagStrip    = document.getElementById('tag-strip');
+const toast       = document.getElementById('toast');
 
-    if (char === '"' && inQuotes && nextChar === '"') {
-      currentField += '"'; 
-      i++; 
-    } else if (char === '"') {
-      inQuotes = !inQuotes;
-    } else if (char === ',' && !inQuotes) {
-      currentRow.push(currentField);
-      currentField = '';
-    } else if ((char === '\r' || char === '\n') && !inQuotes) {
-      if (currentField || currentRow.length > 0) {
-        currentRow.push(currentField);
-        rows.push(currentRow);
-      }
-      currentRow = [];
-      currentField = '';
-      if (char === '\r' && nextChar === '\n') i++;
-    } else {
-      currentField += char;
-    }
-  }
-  if (currentField || currentRow.length > 0) {
-    currentRow.push(currentField);
-    rows.push(currentRow);
-  }
-  return rows;
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+function fmt(s){
+  if(!s||isNaN(s)) return '—';
+  return `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
 }
 
-async function loadPlaylists() {
+function showToast(msg){
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'), 2200);
+}
+
+function shareAlbum(album, e){
+  e.stopPropagation(); // don't trigger album row click
+  const url = `https://archive.org/details/${album.id}`;
+  if(navigator.share){
+    navigator.share({
+      title: album.title + ' — Fractured Cynicism',
+      text: 'Listen to ' + album.title + ' by Fractured Cynicism',
+      url: url
+    }).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(url).then(()=>{
+      showToast('Link copied');
+    }).catch(()=>{
+      showToast('archive.org/details/' + album.id);
+    });
+  }
+}
+
+// ── TAGS ─────────────────────────────────────────────────────────────────────
+function buildTags(){
+  const set = new Set(['All']);
+  ALBUMS.forEach(a => a.tags.split(',').forEach(t => {
+    const clean = t.trim();
+    if(clean) set.add(clean.charAt(0).toUpperCase() + clean.slice(1));
+  }));
+  tagStrip.innerHTML = '';
+  [...set].forEach(tag => {
+    const b = document.createElement('button');
+    b.className = 'tag-btn' + (tag === activeTag ? ' active' : '');
+    b.textContent = tag;
+    b.addEventListener('click', ()=>{ activeTag = tag; buildTags(); renderAlbumList(); });
+    tagStrip.appendChild(b);
+  });
+}
+
+// ── ALBUM LIST ────────────────────────────────────────────────────────────────
+function renderAlbumList(){
+  const lc = activeTag.toLowerCase();
+  const filtered = activeTag === 'All'
+    ? ALBUMS
+    : ALBUMS.filter(a => a.tags.toLowerCase().split(',').map(t=>t.trim()).some(t => t === lc));
+
+  albumListEl.innerHTML = '';
+  if(!filtered.length){
+    albumListEl.innerHTML = '<div class="empty-state">No albums for this tag.</div>';
+    return;
+  }
+
+  filtered.forEach(album => {
+    const idx = ALBUMS.indexOf(album);
+    const row = document.createElement('div');
+    row.className = 'album-row' + (idx === curAlbumIdx ? ' active' : '');
+
+    row.innerHTML = `
+      <div class="album-art">
+        <img src="https://archive.org/services/img/${album.id}" alt="" loading="lazy"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <span class="ph" style="display:none"><i class="ti ti-music"></i></span>
+      </div>
+      <div class="album-info">
+        <div class="album-title">${album.title}</div>
+        <div class="album-tags">${album.tags}</div>
+      </div>
+      <div class="album-actions">
+        <button class="share-btn" aria-label="Share ${album.title}">
+          <i class="ti ti-share"></i>
+        </button>
+        <span class="album-dot"></span>
+      </div>
+    `;
+
+    row.querySelector('.share-btn').addEventListener('click', e => shareAlbum(album, e));
+    row.addEventListener('click', () => selectAlbum(idx));
+    albumListEl.appendChild(row);
+  });
+}
+
+// ── FETCH TRACKS ─────────────────────────────────────────────────────────────
+async function fetchTracks(albumIdx){
+  const album = ALBUMS[albumIdx];
+  if(trackCache[album.id] !== undefined) return trackCache[album.id];
+
   try {
-    const response = await fetch(SHEET_CSV_URL);
-    if (!response.ok) throw new Error('Network response was not ok');
-    
-    const csvText = await response.text();
-    const allData = parseCSV(csvText);
-    const rows = allData.slice(1); // Remove header
+    const res = await fetch(`https://archive.org/metadata/${album.id}`);
+    const data = await res.json();
+    const files = data.files || [];
 
-    const grid = document.getElementById('dynamic-grid');
-    grid.innerHTML = ''; 
+    // prefer original MP3s; fall back to any MP3
+    let mp3s = files.filter(f => f.name && f.name.toLowerCase().endsWith('.mp3') && f.source !== 'derivative');
+    if(!mp3s.length) mp3s = files.filter(f => f.name && f.name.toLowerCase().endsWith('.mp3'));
 
-    if (rows.length === 0) {
-      grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center;">No playlists found in sheet.</div>';
-      return;
-    }
-
-    rows.forEach((cols) => {
-      const title = cols[0];
-      const embedCode = cols[1];
-      const tags = cols[2];
-
-      if (title && embedCode) {
-        const card = document.createElement('div');
-        card.className = 'playlist-card reveal';
-        
-        const tagHtml = tags ? tags.split(',').map(t => `<span class="genre-tag">${t.trim()}</span>`).join('') : '';
-
-        card.innerHTML = `
-          <h3>${title}</h3>
-          <div class="tag-container">${tagHtml}</div>
-        `;
-
-        card.onclick = () => {
-          document.querySelectorAll('.playlist-card').forEach(c => c.classList.remove('active'));
-          card.classList.add('active');
-          document.getElementById('player-title').textContent = title;
-          document.getElementById('embed-target').innerHTML = embedCode;
-          document.getElementById('player-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
-        };
-
-        grid.appendChild(card);
-      }
+    mp3s.sort((a,b) => {
+      const ta = parseInt(a.track||'99'), tb = parseInt(b.track||'99');
+      if(ta !== tb) return ta - tb;
+      return a.name.localeCompare(b.name, undefined, {numeric:true});
     });
 
-    initReveal();
-  } catch (e) {
-    console.error("Full Error:", e);
-    document.getElementById('dynamic-grid').innerHTML = `<div style="grid-column: 1/-1; text-align: center; color:var(--crimson)">Error loading archives. Please check your Google Sheet publication settings.</div>`;
+    const tracks = mp3s.map(f => ({
+      name: (f.title || f.name.replace(/^\d+[\.\-_\s]+/,'').replace(/\.mp3$/i,'')).trim(),
+      file: f.name,
+      dur: f.length ? fmt(parseFloat(f.length)) : '—'
+    }));
+
+    trackCache[album.id] = tracks.length ? tracks : null;
+    return trackCache[album.id];
+  } catch(e){
+    trackCache[album.id] = null;
+    return null;
   }
 }
 
-function initReveal() {
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+// ── SELECT ALBUM ─────────────────────────────────────────────────────────────
+async function selectAlbum(idx){
+  curAlbumIdx = idx;
+  curTrackIdx = 0;
+  renderAlbumList();
+  errBar.style.display = 'none';
+
+  const tracks = await fetchTracks(idx);
+  if(!tracks || !tracks.length){
+    errBar.style.display = 'block';
+    errBar.textContent = 'Tracks not ready yet — Archive.org may still be processing this upload. Try again in a few minutes.';
+    return;
+  }
+  albumTracks = tracks;
+  loadTrack(0);
+  doPlay();
 }
 
-document.addEventListener('DOMContentLoaded', loadPlaylists);
+// ── LOAD / PLAY ───────────────────────────────────────────────────────────────
+function loadTrack(tIdx){
+  curTrackIdx = tIdx;
+  const album = ALBUMS[curAlbumIdx];
+  const track = albumTracks[tIdx];
+  audio.src = `https://archive.org/download/${album.id}/${encodeURIComponent(track.file)}`;
+  npTrack.textContent = track.name;
+  npAlbum.textContent = album.title;
+  progFill.style.width = '0%';
+  curEl.textContent = '0:00';
+  durEl.textContent = track.dur;
+  errBar.style.display = 'none';
+  updateDrawer();
+  updateMediaSession();
+}
+
+function doPlay(){
+  audio.play().then(()=>{
+    playing = true;
+    playIco.className = 'ti ti-player-pause';
+    playBtn.setAttribute('aria-label','Pause');
+  }).catch(()=>{
+    errBar.style.display = 'block';
+    errBar.textContent = 'Could not load audio.';
+  });
+}
+
+function doPause(){
+  audio.pause();
+  playing = false;
+  playIco.className = 'ti ti-player-play';
+  playBtn.setAttribute('aria-label','Play');
+}
+
+// ── CONTROLS ──────────────────────────────────────────────────────────────────
+playBtn.addEventListener('click', ()=>{ playing ? doPause() : doPlay(); });
+
+document.getElementById('btn-prev').addEventListener('click', ()=>{
+  if(curAlbumIdx < 0) return;
+  loadTrack((curTrackIdx - 1 + albumTracks.length) % albumTracks.length);
+  if(playing) doPlay();
+});
+
+document.getElementById('btn-next').addEventListener('click', ()=>{
+  if(curAlbumIdx < 0) return;
+  loadTrack((curTrackIdx + 1) % albumTracks.length);
+  if(playing) doPlay();
+});
+
+audio.addEventListener('ended', ()=>{
+  if(curAlbumIdx < 0) return;
+  loadTrack((curTrackIdx + 1) % albumTracks.length);
+  doPlay();
+});
+
+audio.addEventListener('timeupdate', ()=>{
+  if(!audio.duration) return;
+  const p = (audio.currentTime / audio.duration) * 100;
+  progFill.style.width = p + '%';
+  curEl.textContent = fmt(audio.currentTime);
+  durEl.textContent = fmt(audio.duration);
+});
+
+progBar.addEventListener('click', e => {
+  const r = progBar.getBoundingClientRect();
+  if(audio.duration) audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
+});
+
+// ── DRAWER ────────────────────────────────────────────────────────────────────
+document.getElementById('btn-list').addEventListener('click', ()=>{
+  drawer.classList.add('open'); overlay.classList.add('on');
+});
+document.getElementById('drawer-close').addEventListener('click', closeDrawer);
+overlay.addEventListener('click', closeDrawer);
+function closeDrawer(){ drawer.classList.remove('open'); overlay.classList.remove('on'); }
+
+function updateDrawer(){
+  if(curAlbumIdx < 0) return;
+  drawerTitle.textContent = ALBUMS[curAlbumIdx].title;
+  drawerTracks.innerHTML = '';
+  albumTracks.forEach((t, i) => {
+    const row = document.createElement('div');
+    row.className = 'drawer-track' + (i === curTrackIdx ? ' active' : '');
+    row.innerHTML = `
+      <span class="drawer-track-num">${i+1}</span>
+      <span class="drawer-track-dot"></span>
+      <span class="drawer-track-name">${t.name}</span>
+      <span class="drawer-track-dur">${t.dur}</span>
+    `;
+    row.addEventListener('click', ()=>{ loadTrack(i); if(playing) doPlay(); closeDrawer(); });
+    drawerTracks.appendChild(row);
+  });
+}
+
+// ── MEDIA SESSION (lock screen) ───────────────────────────────────────────────
+function updateMediaSession(){
+  if(!('mediaSession' in navigator)) return;
+  const album = ALBUMS[curAlbumIdx];
+  const track = albumTracks[curTrackIdx];
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: track.name,
+    artist: 'Fractured Cynicism',
+    album: album.title,
+    artwork: [{ src: `https://archive.org/services/img/${album.id}`, sizes:'512x512', type:'image/jpeg' }]
+  });
+  navigator.mediaSession.setActionHandler('play',          ()=>doPlay());
+  navigator.mediaSession.setActionHandler('pause',         ()=>doPause());
+  navigator.mediaSession.setActionHandler('previoustrack', ()=>{ loadTrack((curTrackIdx-1+albumTracks.length)%albumTracks.length); if(playing) doPlay(); });
+  navigator.mediaSession.setActionHandler('nexttrack',     ()=>{ loadTrack((curTrackIdx+1)%albumTracks.length); if(playing) doPlay(); });
+  navigator.mediaSession.setActionHandler('seekto',        e=>{ if(audio.duration) audio.currentTime = e.seekTime; });
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+buildTags();
+renderAlbumList();
 </script>
 </body>
 </html>
