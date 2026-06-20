@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fractured Cynicism · Album</title>
+<meta property="og:title" content="Fractured Cynicism">
+<meta property="og:type" content="music.album">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --gold:#c9a84c;--gold-light:#dbb85c;--bg:#0a0906;--surface:#111009;
+    --surface2:#18150f;--border:#222018;--border2:#2a2520;
+    --text:#e8e0d0;--text2:#b8a88a;--text3:#7a6e5e;--text4:#4a4035;
+    --err:#7a3a3a;
+  }
+  html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,serif;-webkit-tap-highlight-color:transparent}
+  body{padding-bottom:230px}
+
+  .back-bar{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:0.5px solid var(--border2);position:sticky;top:0;background:var(--bg);z-index:50}
+  .back-btn{background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%}
+  .back-btn:hover{background:var(--surface2);color:var(--gold)}
+  .back-label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--text3)}
+
+  .hero{padding:28px 20px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;border-bottom:0.5px solid var(--border2);background:radial-gradient(ellipse at top, #161208 0%, var(--bg) 70%)}
+  .hero-art{width:160px;height:160px;border-radius:10px;background:var(--surface2);border:0.5px solid var(--border2);overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 30px rgba(0,0,0,.5);margin-bottom:18px}
+  .hero-art img{width:100%;height:100%;object-fit:cover}
+  .hero-art .ph{font-size:48px;color:var(--text4)}
+  .hero-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:8px}
+  .hero-title{font-family:'Cinzel',serif;font-size:26px;font-weight:600;color:var(--text);letter-spacing:.03em;line-height:1.25;margin-bottom:8px}
+  .hero-meta{font-size:13px;font-style:italic;color:var(--text3);margin-bottom:18px}
+  .hero-actions{display:flex;gap:10px}
+  .hero-btn{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:10px 20px;border-radius:24px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s}
+  .hero-btn.primary{background:var(--gold);color:#0a0906;border-color:var(--gold)}
+  .hero-btn.primary:hover{background:var(--gold-light)}
+  .hero-btn:not(.primary):hover{border-color:var(--gold);color:var(--gold)}
+
+  .tags-row{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+  .tag-chip{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:4px 11px;border-radius:14px;border:0.5px solid var(--border2);color:var(--text3)}
+
+  .section{padding:22px 20px;border-bottom:0.5px solid var(--border)}
+  .section-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;color:var(--text4);text-transform:uppercase;margin-bottom:12px}
+  .description{font-size:16px;line-height:1.7;color:var(--text2);white-space:pre-line}
+  .description strong{color:var(--text);font-weight:600}
+
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px}
+  .info-item .lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.15em;color:var(--text4);text-transform:uppercase;margin-bottom:3px}
+  .info-item .val{font-size:14px;color:var(--text2);font-style:italic}
+
+  .track-row{display:flex;align-items:center;padding:14px 0;border-bottom:0.5px solid var(--border);cursor:pointer;gap:14px;transition:background .12s}
+  .track-row:last-child{border-bottom:none}
+  .track-row:hover{background:var(--surface2)}
+  .track-row.active{background:#1c1810}
+  .track-num{font-family:'Cinzel',serif;font-size:12px;color:var(--text4);width:18px;text-align:center;flex-shrink:0}
+  .track-row.active .track-num{color:var(--gold)}
+  .track-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0;display:none;animation:pulse 1.4s ease-in-out infinite}
+  .track-row.active .track-dot{display:block}
+  .track-name{flex:1;font-size:16px;font-style:italic;color:var(--text2);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .track-row.active .track-name{color:var(--text)}
+  .track-play-ico{font-size:18px;color:var(--text4);flex-shrink:0}
+  .track-row:hover .track-play-ico{color:var(--gold)}
+  .track-dur{font-family:'Cinzel',serif;font-size:11px;color:var(--text4);flex-shrink:0;width:42px;text-align:right}
+
+  .loading-state, .error-state{padding:60px 20px;text-align:center}
+  .loading-state .spin{width:32px;height:32px;border:2px solid var(--border2);border-top-color:var(--gold);border-radius:50%;margin:0 auto 16px;animation:spin .8s linear infinite}
+  .loading-state p, .error-state p{font-style:italic;color:var(--text3);font-size:15px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .toast{position:fixed;bottom:260px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e1c18;border:0.5px solid var(--border2);color:var(--text2);font-family:'Cinzel',serif;font-size:11px;letter-spacing:.1em;padding:8px 18px;border-radius:20px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:300;white-space:nowrap}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* mini player bar, same as main page */
+  .player{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:0.5px solid var(--border2);z-index:100;display:none}
+  .player.show{display:block}
+  .player-np{padding:12px 18px 8px;border-bottom:0.5px solid var(--border)}
+  .player-np .lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.18em;color:var(--text4);text-transform:uppercase;margin-bottom:3px}
+  .player-np .track-name2{font-size:17px;font-style:italic;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .prog-area{padding:8px 18px 4px}
+  .prog-bar{width:100%;height:3px;background:var(--border2);border-radius:2px;cursor:pointer;margin-bottom:6px}
+  .prog-fill{height:100%;background:var(--gold);border-radius:2px;width:0%;transition:width .25s linear;pointer-events:none}
+  .time-row{display:flex;justify-content:space-between;font-family:'Cinzel',serif;font-size:10px;color:var(--text4);letter-spacing:.05em}
+  .controls{display:flex;align-items:center;justify-content:center;gap:14px;padding:10px 18px 16px}
+  .btn{background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .15s,transform .1s;color:var(--text3)}
+  .btn:active{transform:scale(.9)}
+  .btn-skip{width:52px;height:52px;font-size:22px}
+  .btn-skip:hover{background:var(--surface2);color:var(--gold)}
+  .btn-play{width:68px;height:68px;background:var(--gold);color:#0a0906;font-size:28px;border-radius:50%;box-shadow:0 0 0 5px #1e1a12}
+  .btn-play:hover{background:var(--gold-light)}
+  .err-bar{padding:6px 18px;font-size:11px;color:var(--err);font-style:italic;display:none}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+</style>
+</head>
+<body>
+
+<div class="back-bar">
+  <button class="back-btn" id="back-btn" aria-label="Back"><i class="ti ti-arrow-left"></i></button>
+  <span class="back-label">Fractured Cynicism · Official Archive</span>
+</div>
+
+<div id="content">
+  <div class="loading-state">
+    <div class="spin"></div>
+    <p>Loading album…</p>
+  </div>
+</div>
+
+<div class="toast" id="toast">Link copied</div>
+
+<div class="player" id="player">
+  <div class="player-np">
+    <div class="lbl">Now Playing</div>
+    <div class="track-name2" id="np-track">—</div>
+  </div>
+  <div class="prog-area">
+    <div class="prog-bar" id="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+    <div class="time-row"><span id="cur-t">0:00</span><span id="dur-t">—</span></div>
+  </div>
+  <div class="err-bar" id="err-bar">Could not load audio.</div>
+  <div class="controls">
+    <button class="btn btn-skip" id="btn-prev" aria-label="Previous"><i class="ti ti-player-skip-back"></i></button>
+    <button class="btn btn-play" id="btn-play" aria-label="Play"><i class="ti ti-player-play" id="play-ico"></i></button>
+    <button class="btn btn-skip" id="btn-next" aria-label="Next"><i class="ti ti-player-skip-forward"></i></button>
+  </div>
+</div>
+
+<audio id="audio"></audio>
+
+<script>
+// ── GET ALBUM ID FROM URL ────────────────────────────────────────────────────
+const params = new URLSearchParams(window.location.search);
+const ALBUM_ID = params.get('album');
+
+const SITE_BASE = window.location.origin + window.location.pathname.replace(/album\.html.*$/, '');
+
+let tracks = [];
+let curIdx = 0;
+let playing = false;
+
+const audio    = document.getElementById('audio');
+const content  = document.getElementById('content');
+const player   = document.getElementById('player');
+const playBtn  = document.getElementById('btn-play');
+const playIco  = document.getElementById('play-ico');
+const progBar  = document.getElementById('prog-bar');
+const progFill = document.getElementById('prog-fill');
+const curEl    = document.getElementById('cur-t');
+const durEl    = document.getElementById('dur-t');
+const npTrack  = document.getElementById('np-track');
+const errBar   = document.getElementById('err-bar');
+const toast    = document.getElementById('toast');
+
+function fmt(s){
+  if(!s||isNaN(s)) return '—';
+  return `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+}
+
+function showToast(msg){
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'), 2200);
+}
+
+document.getElementById('back-btn').addEventListener('click', ()=>{
+  if(window.history.length > 1) window.history.back();
+  else window.location.href = SITE_BASE || 'index.html';
+});
+
+function shareAlbum(title){
+  const url = window.location.href;
+  if(navigator.share){
+    navigator.share({ title: title + ' — Fractured Cynicism', text: 'Listen to ' + title + ' by Fractured Cynicism', url }).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(url).then(()=>showToast('Link copied')).catch(()=>showToast(url));
+  }
+}
+
+// ── RENDER ERROR ──────────────────────────────────────────────────────────────
+function renderError(msg){
+  content.innerHTML = `<div class="error-state"><p>${msg}</p></div>`;
+}
+
+// ── FETCH METADATA + RENDER PAGE ──────────────────────────────────────────────
+async function init(){
+  if(!ALBUM_ID){
+    renderError('No album specified.');
+    return;
+  }
+  try {
+    const res = await fetch(`https://archive.org/metadata/${ALBUM_ID}`);
+    const data = await res.json();
+    const meta = data.metadata || {};
+    const files = data.files || [];
+
+    const title = meta.title || ALBUM_ID;
+    document.title = title + ' · Fractured Cynicism';
+
+    let mp3s = files.filter(f => f.name && f.name.toLowerCase().endsWith('.mp3') && f.source !== 'derivative');
+    if(!mp3s.length) mp3s = files.filter(f => f.name && f.name.toLowerCase().endsWith('.mp3'));
+    mp3s.sort((a,b)=>{
+      const ta=parseInt(a.track||'99'), tb=parseInt(b.track||'99');
+      if(ta!==tb) return ta-tb;
+      return a.name.localeCompare(b.name, undefined, {numeric:true});
+    });
+    tracks = mp3s.map(f => ({
+      name: (f.title || f.name.replace(/^\d+[\.\-_\s]+/,'').replace(/\.mp3$/i,'')).trim(),
+      file: f.name,
+      dur: f.length ? fmt(parseFloat(f.length)) : '—'
+    }));
+
+    const description = meta.description
+      ? meta.description.replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,'').trim()
+      : '';
+
+    const subjects = meta.subject
+      ? (Array.isArray(meta.subject) ? meta.subject : meta.subject.split(';').map(s=>s.trim()))
+      : [];
+
+    const language = meta.language || '';
+    const pubDate = meta.publicdate ? meta.publicdate.split(' ')[0] : (meta.addeddate ? meta.addeddate.split(' ')[0] : '');
+    const creator = meta.creator || 'Fractured Cynicism';
+
+    content.innerHTML = `
+      <div class="hero">
+        <div class="hero-art">
+          <img src="https://archive.org/services/img/${ALBUM_ID}" alt=""
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <span class="ph" style="display:none"><i class="ti ti-music"></i></span>
+        </div>
+        <div class="hero-label">${creator}</div>
+        <div class="hero-title">${title}</div>
+        <div class="hero-meta">${tracks.length} track${tracks.length===1?'':'s'}${pubDate ? ' · ' + pubDate : ''}</div>
+        <div class="hero-actions">
+          <button class="hero-btn primary" id="play-all-btn"><i class="ti ti-player-play-filled"></i> Play</button>
+          <button class="hero-btn" id="share-btn"><i class="ti ti-share"></i> Share</button>
+        </div>
+        ${subjects.length ? `<div class="tags-row">${subjects.map(s=>`<span class="tag-chip">${s}</span>`).join('')}</div>` : ''}
+      </div>
+
+      ${description ? `
+      <div class="section">
+        <div class="section-label">About this album</div>
+        <div class="description">${description}</div>
+      </div>` : ''}
+
+      <div class="section">
+        <div class="section-label">Details</div>
+        <div class="info-grid">
+          ${language ? `<div class="info-item"><div class="lbl">Language</div><div class="val">${language}</div></div>` : ''}
+          ${pubDate ? `<div class="info-item"><div class="lbl">Released</div><div class="val">${pubDate}</div></div>` : ''}
+          <div class="info-item"><div class="lbl">Artist</div><div class="val">${creator}</div></div>
+          <div class="info-item"><div class="lbl">Tracks</div><div class="val">${tracks.length}</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Tracklist</div>
+        <div id="tracklist"></div>
+      </div>
+    `;
+
+    document.getElementById('share-btn').addEventListener('click', ()=>shareAlbum(title));
+    document.getElementById('play-all-btn').addEventListener('click', ()=>{
+      if(!tracks.length){ showToast('No playable tracks yet'); return; }
+      loadTrack(0); doPlay();
+    });
+
+    renderTracklist();
+
+    if(!tracks.length){
+      errBar.textContent = 'Tracks not ready yet — Archive.org may still be processing this upload.';
+    }
+
+  } catch(e){
+    renderError('Could not load this album. Please check the link and try again.');
+  }
+}
+
+function renderTracklist(){
+  const tl = document.getElementById('tracklist');
+  if(!tl) return;
+  if(!tracks.length){
+    tl.innerHTML = `<div class="track-row" style="cursor:default"><span class="track-name" style="color:var(--text4);font-style:italic">Tracks are still processing on Archive.org. Check back shortly.</span></div>`;
+    return;
+  }
+  tl.innerHTML = '';
+  tracks.forEach((t,i)=>{
+    const row = document.createElement('div');
+    row.className = 'track-row' + (i===curIdx && player.classList.contains('show') ? ' active' : '');
+    row.innerHTML = `
+      <span class="track-num">${i+1}</span>
+      <span class="track-dot"></span>
+      <span class="track-name">${t.name}</span>
+      <i class="ti ti-player-play track-play-ico"></i>
+      <span class="track-dur">${t.dur}</span>
+    `;
+    row.addEventListener('click', ()=>{ loadTrack(i); doPlay(); });
+    tl.appendChild(row);
+  });
+}
+
+// ── PLAYER LOGIC ──────────────────────────────────────────────────────────────
+function loadTrack(i){
+  curIdx = i;
+  const t = tracks[i];
+  audio.src = `https://archive.org/download/${ALBUM_ID}/${encodeURIComponent(t.file)}`;
+  npTrack.textContent = t.name;
+  progFill.style.width = '0%';
+  curEl.textContent = '0:00';
+  durEl.textContent = t.dur;
+  errBar.style.display = 'none';
+  player.classList.add('show');
+  document.body.style.paddingBottom = '230px';
+  renderTracklist();
+  updateMediaSession();
+}
+
+function doPlay(){
+  audio.play().then(()=>{
+    playing = true;
+    playIco.className = 'ti ti-player-pause';
+  }).catch(()=>{ errBar.style.display='block'; errBar.textContent='Could not load audio.'; });
+}
+function doPause(){
+  audio.pause();
+  playing = false;
+  playIco.className = 'ti ti-player-play';
+}
+
+playBtn.addEventListener('click', ()=>{ playing ? doPause() : doPlay(); });
+document.getElementById('btn-prev').addEventListener('click', ()=>{ loadTrack((curIdx-1+tracks.length)%tracks.length); if(playing) doPlay(); });
+document.getElementById('btn-next').addEventListener('click', ()=>{ loadTrack((curIdx+1)%tracks.length); if(playing) doPlay(); });
+audio.addEventListener('ended', ()=>{ loadTrack((curIdx+1)%tracks.length); doPlay(); });
+audio.addEventListener('timeupdate', ()=>{
+  if(!audio.duration) return;
+  progFill.style.width = (audio.currentTime/audio.duration*100)+'%';
+  curEl.textContent = fmt(audio.currentTime);
+  durEl.textContent = fmt(audio.duration);
+});
+progBar.addEventListener('click', e=>{
+  const r = progBar.getBoundingClientRect();
+  if(audio.duration) audio.currentTime = ((e.clientX-r.left)/r.width)*audio.duration;
+});
+
+function updateMediaSession(){
+  if(!('mediaSession' in navigator)) return;
+  const t = tracks[curIdx];
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: t.name,
+    artist: 'Fractured Cynicism',
+    artwork: [{ src: `https://archive.org/services/img/${ALBUM_ID}`, sizes:'512x512', type:'image/jpeg' }]
+  });
+  navigator.mediaSession.setActionHandler('play', ()=>doPlay());
+  navigator.mediaSession.setActionHandler('pause', ()=>doPause());
+  navigator.mediaSession.setActionHandler('previoustrack', ()=>{ loadTrack((curIdx-1+tracks.length)%tracks.length); if(playing) doPlay(); });
+  navigator.mediaSession.setActionHandler('nexttrack', ()=>{ loadTrack((curIdx+1)%tracks.length); if(playing) doPlay(); });
+  navigator.mediaSession.setActionHandler('seekto', e=>{ if(audio.duration) audio.currentTime = e.seekTime; });
+}
+
+init();
+</script>
+</body>
+</html>

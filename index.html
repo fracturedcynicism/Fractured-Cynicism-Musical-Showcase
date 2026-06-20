@@ -177,9 +177,9 @@ const ALBUMS = [
   {title:"FAIL-SAFE FOR THE SOUL",           id:"fail-safe-forthe-soul",    tags:"English, thrash, metal"},
   {title:"MetaBHOR",                         id:"MetaBHOR",                 tags:"Bangla, grunge, rock, psychedelic, alt, rock"},
   {title:"Bhasma-Samsara",                   id:"Bhasma-Samsara",           tags:"Bangla, classical, grunge, rock, psychedelic, alt, rock"},
-  {title:"সত্য এবং ছায়া",                     id:"Truth_and_Shadow",         tags:"Bangla, classical, rock, psychedelic, prog, rock"}, 
-  {title:"গোলক ধাঁধা",                       id:"golok_dhada",               tags:"Bangla, thrash, NWOBHM, rock"}, 
-  {title:"THE_KALIDASA_TRILOGY",            id:"THE_KALIDASA_TRILOGY",      tags:"Sanskrit, Vedic, psychedelic, prog, rock"}, 
+  {title:"সত্য এবং ছায়া",                     id:"Truth_and_Shadow",         tags:"Bangla, classical, rock, psychedelic, prog, rock"},
+  {title:"গোলক ধাঁধা",                       id:"golok_dhada",               tags:"Bangla, thrash, NWOBHM, rock"},
+  {title:"THE_KALIDASA_TRILOGY",            id:"THE_KALIDASA_TRILOGY",      tags:"Sanskrit, Vedic, psychedelic, prog, rock"},
 ];
 
 // ── STATE ────────────────────────────────────────────────────────────────────
@@ -221,9 +221,13 @@ function showToast(msg){
   setTimeout(()=>toast.classList.remove('show'), 2200);
 }
 
+function albumPageUrl(album){
+  return `album.html?album=${encodeURIComponent(album.id)}`;
+}
+
 function shareAlbum(album, e){
   e.stopPropagation(); // don't trigger album row click
-  const url = `https://archive.org/details/${album.id}`;
+  const url = new URL(albumPageUrl(album), window.location.href).href;
   if(navigator.share){
     navigator.share({
       title: album.title + ' — Fractured Cynicism',
