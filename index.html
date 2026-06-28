@@ -39,7 +39,8 @@
   .album-art .ph{font-size:20px;color:var(--text4)}
 
   .album-info{flex:1;overflow:hidden;min-width:0}
-  .album-title{font-size:16px;font-style:italic;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .album-title{font-size:16px;font-style:italic;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;text-decoration:none}
+  .album-title:hover{color:var(--gold);text-decoration:underline}
   .album-row.active .album-title{color:var(--text)}
   .album-tags{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.08em;color:var(--text4);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase}
   .album-row.active .album-tags{color:var(--gold)}
@@ -180,7 +181,6 @@ const ALBUMS = [
   {title:"সত্য এবং ছায়া",                     id:"Truth_and_Shadow",         tags:"Bangla, classical, rock, psychedelic, prog, rock"},
   {title:"গোলক ধাঁধা",                       id:"golok_dhada",               tags:"Bangla, thrash, NWOBHM, rock"},
   {title:"THE_KALIDASA_TRILOGY",            id:"THE_KALIDASA_TRILOGY",      tags:"Sanskrit, Vedic, psychedelic, prog, rock"},
-   {title:"कामचिह्नसप्तम्",                      id:"7_ornaments",               tags:"Sanskrit, Vedic, psychedelic, prog, rock, erotica"},
 ];
 
 // ── STATE ────────────────────────────────────────────────────────────────────
@@ -286,7 +286,7 @@ function renderAlbumList(){
         <span class="ph" style="display:none"><i class="ti ti-music"></i></span>
       </div>
       <div class="album-info">
-        <div class="album-title">${album.title}</div>
+        <a class="album-title" href="album.html?album=${encodeURIComponent(album.id)}" onclick="event.stopPropagation()">${album.title}</a>
         <div class="album-tags">${album.tags}</div>
       </div>
       <div class="album-actions">
