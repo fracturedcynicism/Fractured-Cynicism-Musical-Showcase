@@ -22,11 +22,42 @@
   .site-hdr h1{font-family:'Cinzel',serif;font-size:22px;font-weight:600;color:var(--text);letter-spacing:.05em}
   .site-hdr p{font-style:italic;font-size:13px;color:var(--text3);margin-top:2px}
 
-  .tag-strip{display:flex;gap:8px;overflow-x:auto;padding:12px 18px;border-bottom:0.5px solid var(--border);scrollbar-width:none}
-  .tag-strip::-webkit-scrollbar{display:none}
-  .tag-btn{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:5px 12px;border-radius:20px;border:0.5px solid var(--border2);background:transparent;color:var(--text3);cursor:pointer;white-space:nowrap;transition:all .15s}
+  /* ── TAG STRIP — wraps on mobile, no scroll ── */
+  .tag-strip{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    padding:12px 18px;
+    border-bottom:0.5px solid var(--border);
+  }
+
+  /* "Clear" hint when filters active */
+  .tag-clear{
+    font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+    padding:5px 10px;border-radius:20px;border:0.5px dashed var(--border2);
+    background:transparent;color:var(--text4);cursor:pointer;white-space:nowrap;
+    transition:all .15s;align-self:center;
+  }
+  .tag-clear:hover{border-color:var(--gold);color:var(--gold)}
+  .tag-clear.hidden{display:none}
+
+  .tag-btn{
+    font-family:'Cinzel',serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    padding:5px 12px;border-radius:20px;border:0.5px solid var(--border2);
+    background:transparent;color:var(--text3);cursor:pointer;white-space:nowrap;
+    transition:all .15s;
+  }
   .tag-btn:hover{border-color:var(--gold);color:var(--gold)}
+  /* active = selected in multi-select */
   .tag-btn.active{background:var(--gold);color:#0a0906;border-color:var(--gold)}
+  /* ALL button style */
+  .tag-btn.all-btn.active{background:transparent;color:var(--text3);border-color:var(--border2)}
+  /* active count badge */
+  .filter-count{
+    font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;
+    color:var(--text4);padding:5px 0;align-self:center;white-space:nowrap;
+  }
+  .filter-count.hidden{display:none}
 
   .album-list{flex:1;overflow-y:auto;padding-bottom:235px}
 
@@ -53,11 +84,9 @@
   .share-btn:hover{background:var(--surface2);color:var(--gold)}
   .share-btn:active{transform:scale(.9)}
 
-  /* toast */
   .toast{position:fixed;bottom:260px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e1c18;border:0.5px solid var(--border2);color:var(--text2);font-family:'Cinzel',serif;font-size:11px;letter-spacing:.1em;padding:8px 18px;border-radius:20px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:300;white-space:nowrap}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-  /* player */
   .player{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:0.5px solid var(--border2);z-index:100}
   .player-np{padding:12px 18px 8px;border-bottom:0.5px solid var(--border)}
   .player-np .lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.18em;color:var(--text4);text-transform:uppercase;margin-bottom:3px}
@@ -81,7 +110,6 @@
 
   .err-bar{padding:6px 18px;font-size:11px;color:var(--err);font-style:italic;display:none}
 
-  /* drawer */
   .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:190;display:none}
   .overlay.on{display:block}
   .drawer{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:0.5px solid var(--border2);z-index:200;transform:translateY(100%);transition:transform .3s ease;max-height:60vh;display:flex;flex-direction:column}
@@ -145,27 +173,23 @@
 </div>
 
 <div class="toast" id="toast">Link copied</div>
-
 <audio id="audio"></audio>
 
 <script>
-// ── ALBUM CATALOGUE ─────────────────────────────────────────────────────────
-// To add a new album: add one line to this array.
-// Format: {title, id, tags}
-// id = the Archive.org identifier from the URL: archive.org/details/YOUR_ID
+// ── ALBUM CATALOGUE ──────────────────────────────────────────────────────────
 const ALBUMS = [
   {title:"নিমজ্জিত দোকান (Submerged Shop)", id:"Submerged_Shop",          tags:"Bangla, jazz, Baul, psychedelic, doom"},
   {title:"Bandhan Se Moksha",                id:"Bandhan_se_moksha",        tags:"Hindi, hard, rock"},
   {title:"Panch Agni",                       id:"Panch_Agni",               tags:"Hindi, classical, alt, rock"},
   {title:"Baal Geet for Broken Adults",      id:"baal-geet-for-broken-adults", tags:"Hindi, alt, rock"},
-  {title:"Hymns of the Baul & the Black Goddess", id:"Baul_Black_Goddess", tags:"Bangla, psychedelic, doom, metal, classical, "},
+  {title:"Hymns of the Baul & the Black Goddess", id:"Baul_Black_Goddess", tags:"Bangla, psychedelic, doom, metal, classical"},
   {title:"Andhaa Tamasha",                   id:"Andhaa_Tamasha",           tags:"Hindi, thrash, metal, satire"},
   {title:"Sukumar Ray's Abol Taabol",        id:"Abol_Taabol",              tags:"Bangla, satire, cover"},
-  {title:"Anhad",                            id:"anhad_202605",             tags:"Hindi, alt, rock, psychedelic, rock, ghazal, thumri, classical"},
-  {title:"Shahar Aur Saaya",                 id:"Shahar_Aur_Saaya",         tags:"Hindi, grunge, rock, alt, rock"},
-  {title:"Astitva K Paar",                   id:"Astitva_K_Paar",           tags:"Hindi, thumri, alt, rock, psychedelic, rock, classical"},
+  {title:"Anhad",                            id:"anhad_202605",             tags:"Hindi, alt, rock, psychedelic, ghazal, thumri, classical"},
+  {title:"Shahar Aur Saaya",                 id:"Shahar_Aur_Saaya",         tags:"Hindi, grunge, rock, alt"},
+  {title:"Astitva K Paar",                   id:"Astitva_K_Paar",           tags:"Hindi, thumri, alt, rock, psychedelic, classical"},
   {title:"PAṬṬIKĀ BHAṄGA",                  id:"pattika_bhanga",           tags:"Sanskrit, Vedic, metal, classical"},
-  {title:"7/8 Saansein",                     id:"7__8_saansein",            tags:"Hindi, thumri, ghazal, alt, rock, psychedelic, rock, classical"},
+  {title:"7/8 Saansein",                     id:"7__8_saansein",            tags:"Hindi, thumri, ghazal, alt, rock, psychedelic, classical"},
   {title:"Chakra",                           id:"chakra_202605",            tags:"Sanskrit, Vedic, metal, classical"},
   {title:"Moner Alo",                        id:"Moner_Alo",                tags:"Baul, Bangla, grunge, alt, rock"},
   {title:"Antarvinasha",                     id:"Antarvinasha",             tags:"Sanskrit, Vedic, metal, classical"},
@@ -176,106 +200,151 @@ const ALBUMS = [
   {title:"Lofi Yaadein",                     id:"Lofi_Yaadein",             tags:"Hindi, soft, rock"},
   {title:"Gauranga Prema",                   id:"Gauranga-prema",           tags:"Hindi, Bhakti, classical, psychedelic, doom, metal"},
   {title:"FAIL-SAFE FOR THE SOUL",           id:"fail-safe-forthe-soul",    tags:"English, thrash, metal"},
-  {title:"MetaBHOR",                         id:"MetaBHOR",                 tags:"Bangla, grunge, rock, psychedelic, alt, rock"},
-  {title:"Bhasma-Samsara",                   id:"Bhasma-Samsara",           tags:"Bangla, classical, grunge, rock, psychedelic, alt, rock"},
-  {title:"সত্য এবং ছায়া",                     id:"Truth_and_Shadow",         tags:"Bangla, classical, rock, psychedelic, prog, rock"},
+  {title:"MetaBHOR",                         id:"MetaBHOR",                 tags:"Bangla, grunge, rock, psychedelic, alt"},
+  {title:"Bhasma-Samsara",                   id:"Bhasma-Samsara",           tags:"Bangla, classical, grunge, rock, psychedelic, alt"},
+  {title:"সত্য এবং ছায়া",                     id:"Truth_and_Shadow",         tags:"Bangla, classical, rock, psychedelic, prog"},
   {title:"গোলক ধাঁধা",                       id:"golok_dhada",               tags:"Bangla, thrash, NWOBHM, rock"},
   {title:"THE_KALIDASA_TRILOGY",            id:"THE_KALIDASA_TRILOGY",      tags:"Sanskrit, Vedic, psychedelic, prog, rock"},
-  {title:"Saptaalankaram Thumri version",            id:"Saptaalankaram_Thumri_version",      tags:"Hindi, prog, rock"},
-   {title:"MAHASAMHARA",            id:"MAHASAMHARA",      tags:"Sanskrit, Vedic, prog, metal"},
-    {title:"Visarjan",            id:"Visarjan",      tags:"Hindi, alt, rock, classical"},
-    {title:"Tehrao Ki Aag",            id:"Tehrao_Ki_Aag",      tags:"Hindi, hard, rock, classical"},
-     {title:"শূন্য-কোষ",            id:"SHUNYA_KOSH",      tags:"Bangla, grunge, rock, classical"},
+  {title:"Saptaalankaram Thumri version",    id:"Saptaalankaram_Thumri_version", tags:"Hindi, prog, rock"},
+  {title:"MAHASAMHARA",                      id:"MAHASAMHARA",              tags:"Sanskrit, Vedic, prog, metal"},
+  {title:"Visarjan",                         id:"Visarjan",                 tags:"Hindi, alt, rock, classical"},
+  {title:"Tehrao Ki Aag",                    id:"Tehrao_Ki_Aag",            tags:"Hindi, hard, rock, classical"},
+  {title:"শূন্য-কোষ",                        id:"SHUNYA_KOSH",              tags:"Bangla, grunge, rock, classical"},
 ];
 
 // ── STATE ────────────────────────────────────────────────────────────────────
-const trackCache = {};
-let activeTag = 'All';
-let curAlbumIdx = -1;
-let curTrackIdx = 0;
-let playing = false;
-let albumTracks = [];
+const trackCache  = {};
+let activeTags    = new Set();   // empty = show all (like "All" selected)
+let curAlbumIdx   = -1;
+let curTrackIdx   = 0;
+let playing       = false;
+let albumTracks   = [];
 
 // ── ELEMENTS ─────────────────────────────────────────────────────────────────
-const audio       = document.getElementById('audio');
-const playBtn     = document.getElementById('btn-play');
-const playIco     = document.getElementById('play-ico');
-const progBar     = document.getElementById('prog-bar');
-const progFill    = document.getElementById('prog-fill');
-const curEl       = document.getElementById('cur-t');
-const durEl       = document.getElementById('dur-t');
-const npTrack     = document.getElementById('np-track');
-const npAlbum     = document.getElementById('np-album');
-const errBar      = document.getElementById('err-bar');
-const drawer      = document.getElementById('drawer');
-const overlay     = document.getElementById('overlay');
-const drawerTitle = document.getElementById('drawer-title');
-const drawerTracks= document.getElementById('drawer-tracks');
-const albumListEl = document.getElementById('album-list');
-const tagStrip    = document.getElementById('tag-strip');
-const toast       = document.getElementById('toast');
+const audio        = document.getElementById('audio');
+const playBtn      = document.getElementById('btn-play');
+const playIco      = document.getElementById('play-ico');
+const progBar      = document.getElementById('prog-bar');
+const progFill     = document.getElementById('prog-fill');
+const curEl        = document.getElementById('cur-t');
+const durEl        = document.getElementById('dur-t');
+const npTrack      = document.getElementById('np-track');
+const npAlbum      = document.getElementById('np-album');
+const errBar       = document.getElementById('err-bar');
+const drawer       = document.getElementById('drawer');
+const overlay      = document.getElementById('overlay');
+const drawerTitle  = document.getElementById('drawer-title');
+const drawerTracks = document.getElementById('drawer-tracks');
+const albumListEl  = document.getElementById('album-list');
+const tagStrip     = document.getElementById('tag-strip');
+const toast        = document.getElementById('toast');
 
-// ── HELPERS ──────────────────────────────────────────────────────────────────
+// ── HELPERS ───────────────────────────────────────────────────────────────────
 function fmt(s){
   if(!s||isNaN(s)) return '—';
   return `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
 }
-
 function showToast(msg){
   toast.textContent = msg;
   toast.classList.add('show');
   setTimeout(()=>toast.classList.remove('show'), 2200);
 }
-
 function albumPageUrl(album){
   return `album.html?album=${encodeURIComponent(album.id)}`;
 }
-
 function shareAlbum(album, e){
-  e.stopPropagation(); // don't trigger album row click
+  e.stopPropagation();
   const url = new URL(albumPageUrl(album), window.location.href).href;
   if(navigator.share){
-    navigator.share({
-      title: album.title + ' — Fractured Cynicism',
-      text: 'Listen to ' + album.title + ' by Fractured Cynicism',
-      url: url
-    }).catch(()=>{});
+    navigator.share({title: album.title+' — Fractured Cynicism', text:'Listen to '+album.title+' by Fractured Cynicism', url}).catch(()=>{});
   } else {
-    navigator.clipboard.writeText(url).then(()=>{
-      showToast('Link copied');
-    }).catch(()=>{
-      showToast('archive.org/details/' + album.id);
-    });
+    navigator.clipboard.writeText(url).then(()=>showToast('Link copied')).catch(()=>showToast('archive.org/details/'+album.id));
   }
 }
 
-// ── TAGS ─────────────────────────────────────────────────────────────────────
-function buildTags(){
-  const set = new Set(['All']);
+// ── TAGS — MULTI-SELECT ────────────────────────────────────────────────────────
+function getAllTags(){
+  const set = new Set();
   ALBUMS.forEach(a => a.tags.split(',').forEach(t => {
-    const clean = t.trim();
-    if(clean) set.add(clean.charAt(0).toUpperCase() + clean.slice(1));
+    const c = t.trim();
+    if(c) set.add(c.charAt(0).toUpperCase() + c.slice(1));
   }));
+  return [...set].sort();
+}
+
+function toggleTag(tag){
+  if(activeTags.has(tag)){
+    activeTags.delete(tag);
+  } else {
+    activeTags.add(tag);
+  }
+  buildTags();
+  renderAlbumList();
+}
+
+function clearTags(){
+  activeTags.clear();
+  buildTags();
+  renderAlbumList();
+}
+
+function buildTags(){
   tagStrip.innerHTML = '';
-  [...set].forEach(tag => {
+
+  const hasActive = activeTags.size > 0;
+
+  // ALL button — acts as clear
+  const allBtn = document.createElement('button');
+  allBtn.className = 'tag-btn all-btn' + (hasActive ? '' : ' active');
+  allBtn.textContent = 'All';
+  allBtn.addEventListener('click', clearTags);
+  tagStrip.appendChild(allBtn);
+
+  // Individual tag buttons
+  getAllTags().forEach(tag => {
     const b = document.createElement('button');
-    b.className = 'tag-btn' + (tag === activeTag ? ' active' : '');
+    b.className = 'tag-btn' + (activeTags.has(tag) ? ' active' : '');
     b.textContent = tag;
-    b.addEventListener('click', ()=>{ activeTag = tag; buildTags(); renderAlbumList(); });
+    b.addEventListener('click', ()=> toggleTag(tag));
     tagStrip.appendChild(b);
+  });
+
+  // Count indicator when multiple tags selected
+  if(activeTags.size > 1){
+    const count = document.createElement('span');
+    count.className = 'filter-count';
+    count.textContent = `${activeTags.size} filters · ${getFiltered().length} albums`;
+    tagStrip.appendChild(count);
+  }
+
+  // Clear button when any active
+  if(hasActive){
+    const clr = document.createElement('button');
+    clr.className = 'tag-clear';
+    clr.textContent = '✕ Clear';
+    clr.addEventListener('click', clearTags);
+    tagStrip.appendChild(clr);
+  }
+}
+
+// ── FILTER LOGIC — OR match (any selected tag) ────────────────────────────────
+function getFiltered(){
+  if(activeTags.size === 0) return ALBUMS;
+  return ALBUMS.filter(a => {
+    const albumTagSet = new Set(
+      a.tags.split(',').map(t => (t.trim().charAt(0).toUpperCase() + t.trim().slice(1)).toLowerCase())
+    );
+    return [...activeTags].some(at => albumTagSet.has(at.toLowerCase()));
   });
 }
 
-// ── ALBUM LIST ────────────────────────────────────────────────────────────────
+// ── ALBUM LIST ─────────────────────────────────────────────────────────────────
 function renderAlbumList(){
-  const lc = activeTag.toLowerCase();
-  const filtered = activeTag === 'All'
-    ? ALBUMS
-    : ALBUMS.filter(a => a.tags.toLowerCase().split(',').map(t=>t.trim()).some(t => t === lc));
-
+  const filtered = getFiltered();
   albumListEl.innerHTML = '';
+
   if(!filtered.length){
-    albumListEl.innerHTML = '<div class="empty-state">No albums for this tag.</div>';
+    albumListEl.innerHTML = '<div class="empty-state">No albums match these filters.</div>';
     return;
   }
 
@@ -283,7 +352,6 @@ function renderAlbumList(){
     const idx = ALBUMS.indexOf(album);
     const row = document.createElement('div');
     row.className = 'album-row' + (idx === curAlbumIdx ? ' active' : '');
-
     row.innerHTML = `
       <div class="album-art">
         <img src="https://archive.org/services/img/${album.id}" alt="" loading="lazy"
@@ -295,64 +363,51 @@ function renderAlbumList(){
         <div class="album-tags">${album.tags}</div>
       </div>
       <div class="album-actions">
-        <button class="share-btn" aria-label="Share ${album.title}">
-          <i class="ti ti-share"></i>
-        </button>
+        <button class="share-btn" aria-label="Share ${album.title}"><i class="ti ti-share"></i></button>
         <span class="album-dot"></span>
       </div>
     `;
-
     row.querySelector('.share-btn').addEventListener('click', e => shareAlbum(album, e));
     row.addEventListener('click', () => selectAlbum(idx));
     albumListEl.appendChild(row);
   });
 }
 
-// ── FETCH TRACKS ─────────────────────────────────────────────────────────────
+// ── FETCH TRACKS ──────────────────────────────────────────────────────────────
 async function fetchTracks(albumIdx){
   const album = ALBUMS[albumIdx];
   if(trackCache[album.id] !== undefined) return trackCache[album.id];
-
   try {
-    const res = await fetch(`https://archive.org/metadata/${album.id}`);
+    const res  = await fetch(`https://archive.org/metadata/${album.id}`);
     const data = await res.json();
     const files = data.files || [];
-
-    // prefer original MP3s; fall back to any MP3
     let mp3s = files.filter(f => f.name && f.name.toLowerCase().endsWith('.mp3') && f.source !== 'derivative');
     if(!mp3s.length) mp3s = files.filter(f => f.name && f.name.toLowerCase().endsWith('.mp3'));
-
     mp3s.sort((a,b) => {
       const ta = parseInt(a.track||'99'), tb = parseInt(b.track||'99');
       if(ta !== tb) return ta - tb;
       return a.name.localeCompare(b.name, undefined, {numeric:true});
     });
-
     const tracks = mp3s.map(f => ({
       name: (f.title || f.name.replace(/^\d+[\.\-_\s]+/,'').replace(/\.mp3$/i,'')).trim(),
       file: f.name,
-      dur: f.length ? fmt(parseFloat(f.length)) : '—'
+      dur:  f.length ? fmt(parseFloat(f.length)) : '—'
     }));
-
     trackCache[album.id] = tracks.length ? tracks : null;
     return trackCache[album.id];
-  } catch(e){
-    trackCache[album.id] = null;
-    return null;
-  }
+  } catch(e){ trackCache[album.id] = null; return null; }
 }
 
-// ── SELECT ALBUM ─────────────────────────────────────────────────────────────
+// ── SELECT ALBUM ──────────────────────────────────────────────────────────────
 async function selectAlbum(idx){
   curAlbumIdx = idx;
   curTrackIdx = 0;
   renderAlbumList();
   errBar.style.display = 'none';
-
   const tracks = await fetchTracks(idx);
   if(!tracks || !tracks.length){
     errBar.style.display = 'block';
-    errBar.textContent = 'Tracks not ready yet — Archive.org may still be processing this upload. Try again in a few minutes.';
+    errBar.textContent = 'Tracks not ready yet — Archive.org may still be processing. Try again in a few minutes.';
     return;
   }
   albumTracks = tracks;
@@ -366,11 +421,11 @@ function loadTrack(tIdx){
   const album = ALBUMS[curAlbumIdx];
   const track = albumTracks[tIdx];
   audio.src = `https://archive.org/download/${album.id}/${encodeURIComponent(track.file)}`;
-  npTrack.textContent = track.name;
-  npAlbum.textContent = album.title;
+  npTrack.textContent  = track.name;
+  npAlbum.textContent  = album.title;
   progFill.style.width = '0%';
-  curEl.textContent = '0:00';
-  durEl.textContent = track.dur;
+  curEl.textContent    = '0:00';
+  durEl.textContent    = track.dur;
   errBar.style.display = 'none';
   updateDrawer();
   updateMediaSession();
@@ -381,12 +436,8 @@ function doPlay(){
     playing = true;
     playIco.className = 'ti ti-player-pause';
     playBtn.setAttribute('aria-label','Pause');
-  }).catch(()=>{
-    errBar.style.display = 'block';
-    errBar.textContent = 'Could not load audio.';
-  });
+  }).catch(()=>{ errBar.style.display='block'; errBar.textContent='Could not load audio.'; });
 }
-
 function doPause(){
   audio.pause();
   playing = false;
@@ -396,42 +447,34 @@ function doPause(){
 
 // ── CONTROLS ──────────────────────────────────────────────────────────────────
 playBtn.addEventListener('click', ()=>{ playing ? doPause() : doPlay(); });
-
 document.getElementById('btn-prev').addEventListener('click', ()=>{
   if(curAlbumIdx < 0) return;
   loadTrack((curTrackIdx - 1 + albumTracks.length) % albumTracks.length);
   if(playing) doPlay();
 });
-
 document.getElementById('btn-next').addEventListener('click', ()=>{
   if(curAlbumIdx < 0) return;
   loadTrack((curTrackIdx + 1) % albumTracks.length);
   if(playing) doPlay();
 });
-
 audio.addEventListener('ended', ()=>{
   if(curAlbumIdx < 0) return;
   loadTrack((curTrackIdx + 1) % albumTracks.length);
   doPlay();
 });
-
 audio.addEventListener('timeupdate', ()=>{
   if(!audio.duration) return;
-  const p = (audio.currentTime / audio.duration) * 100;
-  progFill.style.width = p + '%';
-  curEl.textContent = fmt(audio.currentTime);
-  durEl.textContent = fmt(audio.duration);
+  progFill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+  curEl.textContent    = fmt(audio.currentTime);
+  durEl.textContent    = fmt(audio.duration);
 });
-
 progBar.addEventListener('click', e => {
   const r = progBar.getBoundingClientRect();
   if(audio.duration) audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
 });
 
 // ── DRAWER ────────────────────────────────────────────────────────────────────
-document.getElementById('btn-list').addEventListener('click', ()=>{
-  drawer.classList.add('open'); overlay.classList.add('on');
-});
+document.getElementById('btn-list').addEventListener('click', ()=>{ drawer.classList.add('open'); overlay.classList.add('on'); });
 document.getElementById('drawer-close').addEventListener('click', closeDrawer);
 overlay.addEventListener('click', closeDrawer);
 function closeDrawer(){ drawer.classList.remove('open'); overlay.classList.remove('on'); }
@@ -439,7 +482,7 @@ function closeDrawer(){ drawer.classList.remove('open'); overlay.classList.remov
 function updateDrawer(){
   if(curAlbumIdx < 0) return;
   drawerTitle.textContent = ALBUMS[curAlbumIdx].title;
-  drawerTracks.innerHTML = '';
+  drawerTracks.innerHTML  = '';
   albumTracks.forEach((t, i) => {
     const row = document.createElement('div');
     row.className = 'drawer-track' + (i === curTrackIdx ? ' active' : '');
@@ -454,16 +497,14 @@ function updateDrawer(){
   });
 }
 
-// ── MEDIA SESSION (lock screen) ───────────────────────────────────────────────
+// ── MEDIA SESSION ─────────────────────────────────────────────────────────────
 function updateMediaSession(){
   if(!('mediaSession' in navigator)) return;
   const album = ALBUMS[curAlbumIdx];
   const track = albumTracks[curTrackIdx];
   navigator.mediaSession.metadata = new MediaMetadata({
-    title: track.name,
-    artist: 'Fractured Cynicism',
-    album: album.title,
-    artwork: [{ src: `https://archive.org/services/img/${album.id}`, sizes:'512x512', type:'image/jpeg' }]
+    title: track.name, artist: 'Fractured Cynicism', album: album.title,
+    artwork: [{ src:`https://archive.org/services/img/${album.id}`, sizes:'512x512', type:'image/jpeg' }]
   });
   navigator.mediaSession.setActionHandler('play',          ()=>doPlay());
   navigator.mediaSession.setActionHandler('pause',         ()=>doPause());
