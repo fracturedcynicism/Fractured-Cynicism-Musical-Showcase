@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>Fractured Cynicism · Official Archive</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -123,7 +124,7 @@
   .drawer-track.active .drawer-track-name{color:var(--text)}
   .drawer-track-dur{font-family:'Cinzel',serif;font-size:11px;color:var(--text4)}
 
-  .empty-state{padding:40px 18px;text-align:center;font-style:italic;color:var(--text4);font-size:15px}
+  .empty-state{padding:48px 24px;text-align:center;font-style:italic;color:var(--text3);font-size:15px;line-height:1.7}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
 </style>
 </head>
@@ -172,7 +173,7 @@
 <script>
 // ── ALBUM CATALOGUE ──────────────────────────────────────────────────────────
 const ALBUMS = [
-  {title:"নিমজ্জিত দোকান (Submerged Shop)", id:"Submerged_Shop",          tags:"Bangla, jazz, Baul, psychedelic, doom"},
+  {title:"নিমজ্জিত দোকান", id:"Submerged_Shop",          tags:"Bangla, jazz, Baul, psychedelic, doom"},
   {title:"Bandhan Se Moksha",                id:"Bandhan_se_moksha",        tags:"Hindi, hard, rock"},
   {title:"Panch Agni",                       id:"Panch_Agni",               tags:"Hindi, classical, alt, rock"},
   {title:"Baal Geet for Broken Adults",      id:"baal-geet-for-broken-adults", tags:"Hindi, alt, rock"},
@@ -338,7 +339,16 @@ function renderAlbumList(){
   albumListEl.innerHTML = '';
 
   if(!filtered.length){
-    albumListEl.innerHTML = '<div class="empty-state">No albums match these filters.</div>';
+    albumListEl.innerHTML = `<div class="empty-state">
+  No such combination found.<br><br>
+  <span style="font-size:13px;font-style:italic;color:var(--text4)">
+    Got a suggestion? Drop us a line —<br>
+    <a href="mailto:Fracturedcynicism@gmail.com"
+       style="color:var(--gold);text-decoration:none;letter-spacing:.05em;font-family:'Cinzel',serif;font-size:11px">
+      Fracturedcynicism@gmail.com
+    </a>
+  </span>
+</div>`;
     return;
   }
 
