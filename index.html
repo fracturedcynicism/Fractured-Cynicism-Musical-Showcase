@@ -22,42 +22,36 @@
   .site-hdr h1{font-family:'Cinzel',serif;font-size:22px;font-weight:600;color:var(--text);letter-spacing:.05em}
   .site-hdr p{font-style:italic;font-size:13px;color:var(--text3);margin-top:2px}
 
-  /* ── TAG STRIP — wraps on mobile, no scroll ── */
+  /* ── TAG STRIP — wraps on mobile, compact ── */
   .tag-strip{
     display:flex;
     flex-wrap:wrap;
-    gap:7px;
-    padding:12px 18px;
+    gap:5px;
+    padding:8px 14px;
     border-bottom:0.5px solid var(--border);
   }
-
-  /* "Clear" hint when filters active */
-  .tag-clear{
-    font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;text-transform:uppercase;
-    padding:5px 10px;border-radius:20px;border:0.5px dashed var(--border2);
-    background:transparent;color:var(--text4);cursor:pointer;white-space:nowrap;
-    transition:all .15s;align-self:center;
-  }
-  .tag-clear:hover{border-color:var(--gold);color:var(--gold)}
-  .tag-clear.hidden{display:none}
-
   .tag-btn{
-    font-family:'Cinzel',serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
-    padding:5px 12px;border-radius:20px;border:0.5px solid var(--border2);
+    font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+    padding:4px 9px;border-radius:20px;border:0.5px solid var(--border2);
     background:transparent;color:var(--text3);cursor:pointer;white-space:nowrap;
-    transition:all .15s;
+    transition:all .15s;line-height:1.4;
   }
   .tag-btn:hover{border-color:var(--gold);color:var(--gold)}
-  /* active = selected in multi-select */
   .tag-btn.active{background:var(--gold);color:#0a0906;border-color:var(--gold)}
-  /* ALL button style */
   .tag-btn.all-btn.active{background:transparent;color:var(--text3);border-color:var(--border2)}
-  /* active count badge */
-  .filter-count{
-    font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;
-    color:var(--text4);padding:5px 0;align-self:center;white-space:nowrap;
+  /* status row below tags when filters active */
+  .filter-status{
+    width:100%;display:none;align-items:center;justify-content:space-between;
+    padding:5px 2px 2px;border-top:0.5px solid var(--border);margin-top:3px;
   }
-  .filter-count.hidden{display:none}
+  .filter-status.visible{display:flex}
+  .filter-count{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.08em;color:var(--text4);}
+  .tag-clear{
+    font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+    padding:3px 9px;border-radius:20px;border:0.5px solid var(--border2);
+    background:transparent;color:var(--text4);cursor:pointer;transition:all .15s;
+  }
+  .tag-clear:hover{border-color:var(--gold);color:var(--gold)}
 
   .album-list{flex:1;overflow-y:auto;padding-bottom:235px}
 
@@ -309,32 +303,32 @@ function buildTags(){
     tagStrip.appendChild(b);
   });
 
-  // Count indicator when multiple tags selected
-  if(activeTags.size > 1){
-    const count = document.createElement('span');
-    count.className = 'filter-count';
-    count.textContent = `${activeTags.size} filters · ${getFiltered().length} albums`;
-    tagStrip.appendChild(count);
-  }
-
-  // Clear button when any active
-  if(hasActive){
-    const clr = document.createElement('button');
-    clr.className = 'tag-clear';
-    clr.textContent = '✕ Clear';
-    clr.addEventListener('click', clearTags);
-    tagStrip.appendChild(clr);
-  }
+  // Status row: count + clear — shown only when filters active
+  const statusRow = document.createElement('div');
+  statusRow.className = 'filter-status' + (hasActive ? ' visible' : '');
+  const countEl = document.createElement('span');
+  countEl.className = 'filter-count';
+  const filtered = getFiltered();
+  countEl.textContent = hasActive
+    ? `${activeTags.size} filter${activeTags.size > 1 ? 's' : ''} · ${filtered.length} album${filtered.length !== 1 ? 's' : ''}`
+    : '';
+  const clrBtn = document.createElement('button');
+  clrBtn.className = 'tag-clear';
+  clrBtn.textContent = '✕ Clear all';
+  clrBtn.addEventListener('click', clearTags);
+  statusRow.appendChild(countEl);
+  statusRow.appendChild(clrBtn);
+  tagStrip.appendChild(statusRow);
 }
 
-// ── FILTER LOGIC — OR match (any selected tag) ────────────────────────────────
+// ── FILTER LOGIC — AND match (album must have ALL selected tags) ──────────────
 function getFiltered(){
   if(activeTags.size === 0) return ALBUMS;
   return ALBUMS.filter(a => {
     const albumTagSet = new Set(
-      a.tags.split(',').map(t => (t.trim().charAt(0).toUpperCase() + t.trim().slice(1)).toLowerCase())
+      a.tags.split(',').map(t => t.trim().toLowerCase())
     );
-    return [...activeTags].some(at => albumTagSet.has(at.toLowerCase()));
+    return [...activeTags].every(at => albumTagSet.has(at.toLowerCase()));
   });
 }
 
